@@ -1,4 +1,4 @@
-package com.example.messenger;
+package com.fileservice.messenger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
