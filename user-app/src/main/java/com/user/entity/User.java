@@ -12,8 +12,8 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Table(name = "profiles")
-public class Profile {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @UuidGenerator

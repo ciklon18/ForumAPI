@@ -1,7 +1,7 @@
 package com.user.mapper;
 
 import com.user.dto.RegistrationRequestDto;
-import com.user.entity.Profile;
+import com.user.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -9,5 +9,5 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
-    Profile map(RegistrationRequestDto registrationRequestDto);
+    User map(RegistrationRequestDto registrationRequestDto);
 }

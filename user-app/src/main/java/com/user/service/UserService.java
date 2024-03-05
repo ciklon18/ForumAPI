@@ -4,12 +4,12 @@ import com.user.dto.AuthorityType;
 import com.user.dto.JwtAuthorityDto;
 import com.user.dto.LoginRequestDto;
 import com.user.dto.RegistrationRequestDto;
-import com.user.entity.Profile;
+import com.user.entity.User;
 import com.user.entity.UserAuthority;
 import com.user.error.ErrorCode;
 import com.user.mapper.UserMapper;
 import com.user.repository.AuthorityRepository;
-import com.user.repository.ProfileRepository;
+import com.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
@@ -26,7 +26,7 @@ public class UserService {
 
     private final JwtService jwtService;
 
-    private final ProfileRepository profileRepository;
+    private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
 
     private final UserMapper userMapper;
@@ -37,16 +37,16 @@ public class UserService {
         try {
             UUID uuid = UUID.randomUUID();
             isEmailAlreadyUsed(registrationRequestDto.email());
-            Profile profile = userMapper.map(registrationRequestDto);
-            profile.setId(uuid);
-            profile.setPassword(passwordEncoder.encode(registrationRequestDto.password()));
+            User user = userMapper.map(registrationRequestDto);
+            user.setId(uuid);
+            user.setPassword(passwordEncoder.encode(registrationRequestDto.password()));
 
             String token = jwtService.generateToken(
-                    profile.getEmail(),
+                    user.getEmail(),
                     Stream.of(AuthorityType.USER).map(Enum::name).toList(),
                     uuid
             );
-            profileRepository.save(profile);
+            userRepository.save(user);
 //            UserAuthority userAuthority =
 //                    UserAuthority.builder()
 //                            .userId(uuid)
@@ -65,16 +65,16 @@ public class UserService {
 
     public JwtAuthorityDto login(LoginRequestDto loginRequestDto) {
         isEmailExist(loginRequestDto.email());
-        Profile profile = profileRepository.findByEmail(loginRequestDto.email());
-        isPasswordCorrect(loginRequestDto.password(), profile.getPassword());
-        List<UserAuthority> userAuthorities = authorityRepository.findAllByUserId(profile.getId());
+        User user = userRepository.findByEmail(loginRequestDto.email());
+        isPasswordCorrect(loginRequestDto.password(), user.getPassword());
+        List<UserAuthority> userAuthorities = authorityRepository.findAllByUserId(user.getId());
         String token = jwtService.generateToken(
-                profile.getEmail(),
+                user.getEmail(),
                 userAuthorities.stream().map(UserAuthority::getAuthorityType).toList(),
-                profile.getId()
+                user.getId()
         );
         return JwtAuthorityDto.builder()
-                .userId(profile.getId())
+                .userId(user.getId())
                 .token(token)
                 .build();
     }
@@ -86,13 +86,13 @@ public class UserService {
     }
 
     private void isEmailExist(String email) {
-        if (!profileRepository.isProfileExistByEmail(email)) {
+        if (!userRepository.isProfileExistByEmail(email)) {
             throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
         }
     }
 
     private void isEmailAlreadyUsed(String email) {
-        if (profileRepository.isProfileExistByEmail(email)) {
+        if (userRepository.isProfileExistByEmail(email)) {
             throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
         }
     }
