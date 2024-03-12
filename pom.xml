@@ -18,6 +18,7 @@
 
     <modules>
         <module>user-app</module>
+        <module>forum-app</module>
     </modules>
 
     <properties>

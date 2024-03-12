@@ -1,0 +1,21 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/messenger
+    username: postgres
+    password: 123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+        ddl-auto: validate
+    show-sql: true
+  flyway:
+    url: jdbc:postgresql://localhost:5432/messenger
+    user: postgres
+    password: 123
+    baseline-on-migrate: true
+
+
+
