@@ -17,6 +17,7 @@
     <description>messenger</description>
 
     <modules>
+        <module>user-app</module>
     </modules>
 
     <properties>
