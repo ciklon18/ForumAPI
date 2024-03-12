@@ -17,7 +17,6 @@
     <description>messenger</description>
 
     <modules>
-        <module>file-service</module>
     </modules>
 
     <properties>
