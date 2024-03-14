@@ -11,3 +11,4 @@ public class ApiPaths {
 
     public static final String AUTHORITY = "/api/authority";
 }
+
