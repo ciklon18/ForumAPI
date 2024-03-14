@@ -20,7 +20,8 @@ public class UserAuthority {
     @Id
     private UUID forumId;
     @MapsId
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
     private User user;
     @Column(name = "authority_type")
     private String authorityType;

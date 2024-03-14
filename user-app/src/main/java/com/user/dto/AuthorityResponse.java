@@ -1,5 +1,6 @@
 package com.user.dto;
 
+import com.forum.security.dto.AuthorityType;
 import lombok.Builder;
 
 import java.util.List;

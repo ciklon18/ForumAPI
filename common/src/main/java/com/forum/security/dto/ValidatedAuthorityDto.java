@@ -1,4 +1,4 @@
-package com.user.dto;
+package com.forum.security.dto;
 
 import java.util.List;
 import java.util.UUID;

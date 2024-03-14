@@ -1,4 +1,4 @@
-package com.user.error;
+package com.forum.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

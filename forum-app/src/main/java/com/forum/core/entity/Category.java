@@ -40,6 +40,7 @@ public class Category {
 
     private UUID authorId;
 
+
     public void addChildCategory(Category category) {
         childCategories.add(category);
         category.setParentCategory(this);

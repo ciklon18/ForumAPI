@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8085
 
 jwt:
   secret: "fda32faa4f2c8d3b7a1e6f45fad4sf8a0b434df7d8b1d4e6f3c8a9d2b5f8e3a9c8b5f6v8a3d9"
@@ -11,14 +11,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/messenger
     username: postgres
     password: 123
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    url: jdbc:postgresql://localhost:5432/messenger
-    user: postgres
-    password: 123
-    baseline-on-migrate: true
-
-
+  security:
+    user:
+      name: admin
+      password: admin
 logging:
   level:
     org:

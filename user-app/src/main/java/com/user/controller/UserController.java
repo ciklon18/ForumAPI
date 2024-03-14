@@ -1,10 +1,10 @@
 package com.user.controller;
 
+import com.forum.error.ErrorCode;
 import com.user.constants.ApiPaths;
 import com.user.dto.JwtAuthorityDto;
 import com.user.dto.LoginRequestDto;
 import com.user.dto.RegistrationRequestDto;
-import com.user.error.ErrorCode;
 import com.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;

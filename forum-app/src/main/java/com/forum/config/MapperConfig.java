@@ -1,6 +1,8 @@
 package com.forum.config;
 
-import com.forum.core.mapper.*;
+import com.forum.core.mapper.CategoryMapper;
+import com.forum.core.mapper.MessageMapper;
+import com.forum.core.mapper.TopicMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,16 +10,16 @@ import org.springframework.context.annotation.Configuration;
 public class MapperConfig {
     @Bean
     public CategoryMapper categoryMapper() {
-        return new CategoryMapperImpl();
+        return CategoryMapper.INSTANCE;
     }
 
     @Bean
     public MessageMapper messageMapper() {
-        return new MessageMapperImpl();
+        return MessageMapper.INSTANCE;
     }
 
     @Bean
     public TopicMapper topicMapper() {
-        return new TopicMapperImpl();
+        return TopicMapper.INSTANCE;
     }
 }

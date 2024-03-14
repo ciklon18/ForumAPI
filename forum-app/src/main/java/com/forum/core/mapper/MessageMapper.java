@@ -8,11 +8,14 @@ import com.forum.core.entity.Topic;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
 import java.util.UUID;
 
 @Mapper
 public interface MessageMapper {
+    MessageMapper INSTANCE = Mappers.getMapper(MessageMapper.class);
+
     @Mapping(target = "text", source = "messageCreateDto.text")
     @Mapping(target = "topic", source = "topic")
     @Mapping(target = "authorId", source = "authorId")

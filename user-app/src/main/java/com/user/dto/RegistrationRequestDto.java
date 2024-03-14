@@ -10,6 +10,7 @@ public record RegistrationRequestDto(
 
         @Pattern(regexp = RegularExpressions.PASSWORD, message = DefaultMessages.PASSWORD_INVALID)
         String password,
+        String login,
         String name,
         String surname
 ) {

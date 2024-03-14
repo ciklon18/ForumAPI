@@ -1,8 +1,8 @@
-package com.user.service;
+package com.forum.security.service;
 
-import com.user.dto.JwtDto;
-import com.user.dto.ValidatedAuthorityDto;
-import com.user.error.ErrorCode;
+import com.forum.error.ErrorCode;
+import com.forum.security.dto.JwtDto;
+import com.forum.security.dto.ValidatedAuthorityDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

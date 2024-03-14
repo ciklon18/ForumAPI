@@ -1,4 +1,4 @@
-package com.user.service;
+package com.forum.security.service;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

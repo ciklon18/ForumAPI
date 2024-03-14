@@ -31,6 +31,10 @@ public class Topic {
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "author_id")
+//    private User authorId;
+
     private UUID authorId;
 
     @PrePersist
