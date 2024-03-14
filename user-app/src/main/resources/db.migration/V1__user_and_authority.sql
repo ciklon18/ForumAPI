@@ -8,8 +8,9 @@ CREATE TABLE users (
 );
 
 CREATE TABLE authorities (
+     id UUID PRIMARY KEY,
      user_id UUID REFERENCES users(id),
-     authority_type VARCHAR(100) NOT NULL,
-     PRIMARY KEY (user_id, authority_type)
+     authority_type VARCHAR(255)
 );
+
 

@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @EnableJwtProperty
 @EnableJwtService
 public class UserService {
-
+    private final AuthorityType BASE_AUTHORITY_TYPE = AuthorityType.USER;
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
@@ -39,27 +39,27 @@ public class UserService {
     public JwtAuthorityDto register(RegistrationRequestDto registrationRequestDto) {
         try {
             UUID userUUID = UUID.randomUUID();
-            UUID forumUUID = UUID.randomUUID();
             isEmailAlreadyUsed(registrationRequestDto.email());
             User user = userMapper.map(registrationRequestDto, userUUID,
                                        passwordEncoder.encode(registrationRequestDto.password()));
 
             String token = jwtService.generateToken(
                     user.getEmail(),
-                    Stream.of(AuthorityType.USER).map(Enum::name).toList(),
+                    Stream.of(BASE_AUTHORITY_TYPE).map(Enum::name).toList(),
                     userUUID
             );
             userRepository.save(user);
-//            authorityRepository.save(authorityMapper.map(user, AuthorityType.USER.name(), forumUUID));
+            User savedUser = userRepository.findByEmail(user.getEmail());
+            authorityRepository.save(authorityMapper.map(savedUser, BASE_AUTHORITY_TYPE.name()));
             return JwtAuthorityDto.builder()
                     .userId(userUUID)
                     .token(token)
+                    .authorities(List.of(AuthorityType.USER))
                     .build();
         } catch (Exception e) {
             throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
         }
     }
-
 
     public JwtAuthorityDto login(LoginRequestDto loginRequestDto) {
         isEmailExist(loginRequestDto.email());

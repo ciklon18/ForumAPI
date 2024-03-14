@@ -18,6 +18,5 @@ public interface AuthorityMapper {
 
     @Mapping(target = "authorityType", source = "authorityType")
     @Mapping(target = "user", source = "user")
-    @Mapping(target = "forumId", source = "forumId")
-    UserAuthority map(User user, String authorityType, UUID forumId);
+    UserAuthority map(User user, String authorityType);
 }
