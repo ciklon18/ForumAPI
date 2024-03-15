@@ -9,7 +9,9 @@ import com.forum.core.entity.Topic;
 import com.forum.core.mapper.MessageMapper;
 import com.forum.core.repository.MessageRepository;
 import com.forum.core.repository.TopicRepository;
+import com.forum.integration.user.UserClient;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,12 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final TopicRepository topicRepository;
     private final MessageMapper messageMapper;
+    private final UserClient userClient;
 
-    public void createMessage(MessageCreateDto messageCreateDto, UUID authorId) {
+    public void createMessage(MessageCreateDto messageCreateDto, UUID authorId) throws BadRequestException {
+        if (!userClient.checkUserExisingById(authorId)){
+            throw new BadRequestException("Author not found");
+        }
         Topic topic = topicRepository.findById(messageCreateDto.topicId())
                 .orElseThrow(() -> new RuntimeException("Topic not found"));
         Message message = messageMapper.map(messageCreateDto, authorId, topic);

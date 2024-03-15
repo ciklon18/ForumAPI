@@ -9,7 +9,9 @@ import com.forum.core.entity.Topic;
 import com.forum.core.mapper.TopicMapper;
 import com.forum.core.repository.CategoryRepository;
 import com.forum.core.repository.TopicRepository;
+import com.forum.integration.user.UserClient;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +26,11 @@ public class TopicService {
     private final TopicRepository topicRepository;
     private final CategoryRepository categoryRepository;
     private final TopicMapper topicMapper;
-
-    public UUID createTopic(TopicCreateDto topicCreateDto, UUID authorId) {
+    private final UserClient userClient;
+    public UUID createTopic(TopicCreateDto topicCreateDto, UUID authorId) throws BadRequestException {
+        if (!userClient.checkUserExisingById(authorId)){
+            throw new BadRequestException("Author not found");
+        }
         Category category = categoryRepository.getCategoryIfLastLevel(topicCreateDto.categoryId());
         if (category == null) {
             throw new IllegalArgumentException("Wrong category id");

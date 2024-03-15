@@ -33,6 +33,8 @@
         <jakarta.validation>3.0.2</jakarta.validation>
         <spring-boot.version>3.2.2</spring-boot.version>
         <flyway.version>10.9.1</flyway.version>
+        <feign.version>4.1.0</feign.version>
+        <openfeign.version>13.2.1</openfeign.version>
     </properties>
 
     <dependencyManagement>
@@ -119,7 +121,16 @@
                 <version>${flyway.version}</version>
                 <scope>runtime</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${feign.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-okhttp</artifactId>
+                <version>${openfeign.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

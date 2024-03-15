@@ -6,7 +6,8 @@ import com.forum.api.dto.CategoryUpdateDto;
 import com.forum.core.entity.Category;
 import com.forum.core.mapper.CategoryMapper;
 import com.forum.core.repository.CategoryRepository;
-import lombok.AllArgsConstructor;
+import com.forum.integration.user.UserClient;
+import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +17,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-
+    private final UserClient userClient;
 
     public UUID createCategory(CategoryCreateDto categoryCreateDto, UUID authorId) throws BadRequestException {
         isCategoryNameOriginal(categoryCreateDto.name());
+        if (!userClient.checkUserExisingById(authorId)){
+            throw new BadRequestException("Author not found");
+        }
         Category category = categoryMapper.map(categoryCreateDto, authorId);
         updateParentCategory(category, categoryCreateDto.parentId());
         categoryRepository.save(category);
