@@ -1,6 +1,6 @@
 package com.user.controller;
 
-import com.forum.error.ErrorCode;
+import com.common.error.ErrorCode;
 import com.user.constants.ApiPaths;
 import com.user.dto.JwtAuthorityDto;
 import com.user.dto.LoginRequestDto;

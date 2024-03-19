@@ -1,10 +1,9 @@
 package com.user.service;
 
-import com.forum.error.ErrorCode;
-import com.forum.security.dto.AuthorityType;
-import com.forum.security.service.EnableJwtProperty;
-import com.forum.security.service.EnableJwtService;
-import com.forum.security.service.JwtService;
+import com.common.auth.annotation.EnableJwtUtils;
+import com.common.auth.jwt.Role;
+import com.common.auth.util.JwtUtils;
+import com.common.error.ErrorCode;
 import com.user.dto.JwtAuthorityDto;
 import com.user.dto.LoginRequestDto;
 import com.user.dto.RegistrationRequestDto;
@@ -14,6 +13,7 @@ import com.user.mapper.AuthorityMapper;
 import com.user.mapper.UserMapper;
 import com.user.repository.AuthorityRepository;
 import com.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,37 +25,27 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-@EnableJwtProperty
-@EnableJwtService
+@EnableJwtUtils
 public class UserService {
-    private final AuthorityType BASE_AUTHORITY_TYPE = AuthorityType.USER;
-    private final JwtService jwtService;
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
+
     private final UserMapper userMapper;
     private final AuthorityMapper authorityMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
 
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
+
+    @Transactional
     public JwtAuthorityDto register(RegistrationRequestDto registrationRequestDto) {
         try {
-            UUID userUUID = UUID.randomUUID();
             isEmailAlreadyUsed(registrationRequestDto.email());
-            User user = userMapper.map(registrationRequestDto, userUUID,
+            User user = userMapper.map(registrationRequestDto, UUID.randomUUID(),
                                        passwordEncoder.encode(registrationRequestDto.password()));
-
-            String token = jwtService.generateToken(
-                    user.getEmail(),
-                    Stream.of(BASE_AUTHORITY_TYPE).map(Enum::name).toList(),
-                    userUUID
-            );
+            String token = generateAndSaveToken(user.getLogin(), user.getId());
             userRepository.save(user);
-            User savedUser = userRepository.findByEmail(user.getEmail());
-            authorityRepository.save(authorityMapper.map(savedUser, BASE_AUTHORITY_TYPE.name()));
-            return JwtAuthorityDto.builder()
-                    .userId(userUUID)
-                    .token(token)
-                    .authorities(List.of(AuthorityType.USER))
-                    .build();
+            setNewUserAuthorities(registrationRequestDto.email());
+            return new JwtAuthorityDto(user.getId(), token);
         } catch (Exception e) {
             throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
         }
@@ -63,25 +53,44 @@ public class UserService {
 
     public JwtAuthorityDto login(LoginRequestDto loginRequestDto) {
         isEmailExist(loginRequestDto.email());
-        User user = userRepository.findByEmail(loginRequestDto.email());
-        isPasswordCorrect(loginRequestDto.password(), user.getPassword());
-        List<UserAuthority> userAuthorities = authorityRepository.findAllByUserId(user.getId());
-        String token = jwtService.generateToken(
-                user.getEmail(),
-                userAuthorities.stream().map(UserAuthority::getAuthorityType).toList(),
-                user.getId()
-        );
-        return JwtAuthorityDto.builder()
-                .userId(user.getId())
-                .token(token)
-                .build();
+        User user = getUserIfPasswordCorrect(loginRequestDto.password(), loginRequestDto.email());
+        String token = generateAndSaveToken(user);
+        return new JwtAuthorityDto(user.getId(), token);
     }
 
-    private void isPasswordCorrect(String requestPassword, String dbPassword) {
-        if (!passwordEncoder.matches(requestPassword, dbPassword)) {
+    private String generateAndSaveToken(String login, UUID userId) {
+        String token =  jwtUtils.generateToken(
+                login,
+                Stream.of(Role.BASE_ROLE.getAuthority()).toList(),
+                userId
+        );
+        jwtUtils.saveToken(userId.toString(), token);
+        return token;
+    }
+
+    private void setNewUserAuthorities(String email) {
+        User savedUser = userRepository.findByEmail(email);
+        authorityRepository.save(authorityMapper.map(savedUser, Role.BASE_ROLE.getAuthority()));
+    }
+
+    private String generateAndSaveToken(User user) {
+        List<String> roles = authorityRepository.findAllByUserId(user.getId())
+                .stream()
+                .map(UserAuthority::getRole)
+                .toList();
+        String token = jwtUtils.generateToken(user.getLogin(), roles, user.getId());
+        jwtUtils.saveToken(user.getId().toString(), token);
+        return token;
+    }
+
+    private User getUserIfPasswordCorrect(String requestPassword, String email) {
+        User user = userRepository.findByEmail(email);
+        if (!passwordEncoder.matches(requestPassword, user.getPassword())) {
             throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
         }
+        return user;
     }
+
 
     private void isEmailExist(String email) {
         if (!userRepository.isProfileExistByEmail(email)) {

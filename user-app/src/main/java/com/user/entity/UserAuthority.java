@@ -23,8 +23,8 @@ public class UserAuthority {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Column(name = "authority_type")
-    private String authorityType;
+    @Column(name = "role")
+    private String role;
 
 
     @PrePersist

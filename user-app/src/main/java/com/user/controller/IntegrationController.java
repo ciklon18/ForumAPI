@@ -1,6 +1,6 @@
 package com.user.controller;
 
-import com.forum.security.constants.ApiPaths;
+import com.user.constants.ApiPaths;
 import com.user.dto.UserDto;
 import com.user.mapper.UserMapper;
 import com.user.repository.UserRepository;
