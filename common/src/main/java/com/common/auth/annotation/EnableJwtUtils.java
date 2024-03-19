@@ -1,5 +1,6 @@
-package com.forum.security.service;
+package com.common.auth.annotation;
 
+import com.common.auth.util.JwtUtils;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
@@ -9,6 +10,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(JwtService.class)
-public @interface EnableJwtService {
+@Import(JwtUtils.class)
+public @interface EnableJwtUtils {
 }

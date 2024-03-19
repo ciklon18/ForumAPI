@@ -16,7 +16,11 @@ services:
     volumes:
       - minio-data:/data
 
-
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
 
   postgres:
     image: postgres:16.2-alpine

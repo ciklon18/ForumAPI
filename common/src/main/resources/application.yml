@@ -11,12 +11,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/messenger
     username: postgres
     password: 123
-  security:
-    user:
-      name: admin
-      password: admin
+  data:
+    redis:
+      host:
+        localhost
+      port:
+        6379
+
 logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: TRACE
