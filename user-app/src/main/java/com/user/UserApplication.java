@@ -1,6 +1,6 @@
 package com.user;
 
-import com.common.security.EnableSpringSecurity;
+import com.common.security.annotation.EnableSpringSecurity;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;

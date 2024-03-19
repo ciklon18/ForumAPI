@@ -1,25 +1,24 @@
 server:
-  port: 8082
+  port: ${FORUM_APP_PORT}
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/messenger
-    username: postgres
-    password: 123
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  flyway:
+    url: ${DATABASE_URL}
+    user: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    baseline-on-migrate: true
   jpa:
     hibernate:
         ddl-auto: validate
     show-sql: true
-  flyway:
-    url: jdbc:postgresql://localhost:5432/messenger
-    user: postgres
-    password: 123
-    baseline-on-migrate: true
-
 
 logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: ${LOGGING_LEVEL_SPRING_FRAMEWORK_SECURITY}

@@ -16,8 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.common.security.constants.SecurityConstants.AUTHORITIES;
-import static com.common.security.constants.SecurityConstants.LOGIN;
+import static com.common.security.constant.SecurityConstants.AUTHORITIES;
+import static com.common.security.constant.SecurityConstants.LOGIN;
 
 @Service
 @RequiredArgsConstructor

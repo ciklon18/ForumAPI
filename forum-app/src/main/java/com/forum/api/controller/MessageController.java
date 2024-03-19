@@ -1,6 +1,6 @@
 package com.forum.api.controller;
 
-import com.forum.api.ApiPaths;
+import com.forum.api.constant.ApiPaths;
 import com.forum.api.dto.MessageCreateDto;
 import com.forum.api.dto.MessageDto;
 import com.forum.api.dto.MessagePaginationResponse;

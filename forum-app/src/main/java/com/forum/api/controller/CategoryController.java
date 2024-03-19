@@ -1,6 +1,6 @@
 package com.forum.api.controller;
 
-import com.forum.api.ApiPaths;
+import com.forum.api.constant.ApiPaths;
 import com.forum.api.dto.CategoryCreateDto;
 import com.forum.api.dto.CategoryDto;
 import com.forum.api.dto.CategoryUpdateDto;

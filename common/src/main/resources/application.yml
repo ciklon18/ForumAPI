@@ -1,25 +1,24 @@
 server:
-  port: 8085
+  port: ${COMMON_APP_PORT}
 
 jwt:
-  secret: "fda32faa4f2c8d3b7a1e6f45fad4sf8a0b434df7d8b1d4e6f3c8a9d2b5f8e3a9c8b5f6v8a3d9"
-  expiration-time: 86400000
-  token-prefix: "Bearer "
+  secret: ${JWT_SECRET}
+  expiration-time: ${JWT_EXPIRATION_TIME}
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/messenger
-    username: postgres
-    password: 123
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
   data:
     redis:
       host:
-        localhost
+        ${REDIS_HOST}
       port:
-        6379
+        ${REDIS_PORT}
 
 logging:
   level:
     org:
       springframework:
-        security: TRACE
+        security: ${LOGGING_LEVEL_SPRING_FRAMEWORK_SECURITY}

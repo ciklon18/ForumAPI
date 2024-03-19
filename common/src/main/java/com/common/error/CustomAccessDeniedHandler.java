@@ -19,8 +19,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException {
-        log.error("User does not have sufficient privileges to access this resource. User: {}",
-                  request.getUserPrincipal().getName());
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.getWriter().write("Access Denied. You do not have sufficient privileges to access this resource.");
     }

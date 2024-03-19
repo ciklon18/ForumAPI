@@ -3,7 +3,7 @@ package com.common.security.config;
 import com.common.auth.annotation.EnableJwtTokenFilter;
 import com.common.auth.jwt.JwtTokenFilter;
 import com.common.error.CustomAccessDeniedHandler;
-import com.common.security.constants.ApiPaths;
+import com.common.security.constant.ApiPaths;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import static com.common.security.constants.SecurityConstants.AUTH_WHITELIST;
+import static com.common.security.constant.SecurityConstants.AUTH_WHITELIST;
 
 @Configuration
 @RequiredArgsConstructor

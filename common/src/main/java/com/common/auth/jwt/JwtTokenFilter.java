@@ -3,7 +3,7 @@ package com.common.auth.jwt;
 import com.common.auth.annotation.EnableJwtUtils;
 import com.common.auth.util.JwtUtils;
 import com.common.error.ErrorCode;
-import com.common.security.constants.SecurityConstants;
+import com.common.security.constant.SecurityConstants;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,14 +37,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     ) {
         try {
             String token = resolveToken(request);
-            log.info("Token: {}", token);
             if (token.isBlank()) {
-                log.info("Token is blank");
                 filterChain.doFilter(request, response);
                 return;
             }
             if (validateToken(token)) {
-                log.info("Token is valid");
                 Authentication auth = getAuthentication(token);
                 if (auth != null) {
                     SecurityContextHolder.getContext().setAuthentication(auth);
@@ -75,7 +72,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (bearerToken != null && bearerToken.startsWith(SecurityConstants.TOKEN_PREFIX)) {
                 return bearerToken.substring(7);
             }
-            log.info("Bearer token is null or does not start with 'Bearer'");
             return "";
         } catch (Exception e) {
             throw new ServiceException(ErrorCode.INVALID_TOKEN.getCode());

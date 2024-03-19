@@ -1,7 +1,7 @@
 package com.user.config;
 
-import com.user.mapper.AuthorityMapper;
-import com.user.mapper.UserMapper;
+import com.user.core.mapper.AuthorityMapper;
+import com.user.core.mapper.UserMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
