@@ -14,4 +14,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean isProfileExistByEmail(@Param("email") String email);
 
     User findByEmail(String email);
+
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.email = :email OR u.login = :login")
+
+    boolean isProfileExistByEmailAndLogin(@Param("email")String email, @Param("login") String login);
 }

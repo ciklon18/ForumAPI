@@ -8,7 +8,6 @@ import com.forum.api.dto.MessageUpdateDto;
 import com.forum.core.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,7 @@ public class MessageController {
     public void createMessage(
             @Valid @RequestBody MessageCreateDto message,
             @RequestParam UUID authorId
-    ) throws BadRequestException {
+    ) {
         messageService.createMessage(message, authorId);
     }
 

@@ -7,7 +7,6 @@ import com.forum.api.dto.CategoryUpdateDto;
 import com.forum.core.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,7 @@ public class CategoryController {
     public UUID createCategory(
             @Valid @RequestBody CategoryCreateDto category,
             @RequestParam UUID authorId
-    ) throws BadRequestException {
+    ) {
         return categoryService.createCategory(category, authorId);
     }
 
@@ -32,12 +31,12 @@ public class CategoryController {
     public void updateCategory(
             @PathVariable UUID categoryId,
             @Valid @RequestBody CategoryUpdateDto category
-    ) throws BadRequestException {
+    ) {
         categoryService.updateCategory(categoryId, category);
     }
 
     @DeleteMapping(ApiPaths.CATEGORY_BY_ID)
-    public void deleteCategory(@PathVariable UUID categoryId) throws BadRequestException {
+    public void deleteCategory(@PathVariable UUID categoryId) {
         categoryService.deleteCategoryHierarchyById(categoryId);
     }
 

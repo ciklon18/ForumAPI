@@ -3,7 +3,8 @@ package com.user.core.service;
 import com.common.auth.annotation.EnableJwtUtils;
 import com.common.auth.jwt.Role;
 import com.common.auth.util.JwtUtils;
-import com.common.error.ErrorCode;
+import com.common.exception.CustomException;
+import com.common.exception.ExceptionType;
 import com.user.api.dto.JwtAuthorityDto;
 import com.user.api.dto.LoginRequestDto;
 import com.user.api.dto.RegistrationRequestDto;
@@ -13,9 +14,7 @@ import com.user.core.mapper.AuthorityMapper;
 import com.user.core.mapper.UserMapper;
 import com.user.core.repository.AuthorityRepository;
 import com.user.core.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.service.spi.ServiceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,19 +35,15 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-    @Transactional
     public JwtAuthorityDto register(RegistrationRequestDto registrationRequestDto) {
-        try {
-            isEmailAlreadyUsed(registrationRequestDto.email());
-            User user = userMapper.map(registrationRequestDto, UUID.randomUUID(),
-                                       passwordEncoder.encode(registrationRequestDto.password()));
-            String token = generateAndSaveToken(user.getLogin(), user.getId());
-            userRepository.save(user);
-            setNewUserAuthorities(registrationRequestDto.email());
-            return new JwtAuthorityDto(user.getId(), token);
-        } catch (Exception e) {
-            throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
-        }
+        isEmailAndLoginAlreadyUsed(registrationRequestDto.email(), registrationRequestDto.login());
+
+        User user = userMapper.map(registrationRequestDto, UUID.randomUUID(),
+                                   passwordEncoder.encode(registrationRequestDto.password()));
+        String token = generateAndSaveToken(user.getLogin(), user.getId());
+        userRepository.save(user);
+        setNewUserAuthorities(registrationRequestDto.email());
+        return new JwtAuthorityDto(user.getId(), token);
     }
 
     public JwtAuthorityDto login(LoginRequestDto loginRequestDto) {
@@ -59,7 +54,7 @@ public class UserService {
     }
 
     private String generateAndSaveToken(String login, UUID userId) {
-        String token =  jwtUtils.generateToken(
+        String token = jwtUtils.generateToken(
                 login,
                 Stream.of(Role.BASE_ROLE.getAuthority()).toList(),
                 userId
@@ -86,7 +81,7 @@ public class UserService {
     private User getUserIfPasswordCorrect(String requestPassword, String email) {
         User user = userRepository.findByEmail(email);
         if (!passwordEncoder.matches(requestPassword, user.getPassword())) {
-            throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "Password is incorrect");
         }
         return user;
     }
@@ -94,13 +89,13 @@ public class UserService {
 
     private void isEmailExist(String email) {
         if (!userRepository.isProfileExistByEmail(email)) {
-            throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
+            throw new CustomException(ExceptionType.NOT_FOUND, "Email is not found");
         }
     }
 
-    private void isEmailAlreadyUsed(String email) {
-        if (userRepository.isProfileExistByEmail(email)) {
-            throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
+    private void isEmailAndLoginAlreadyUsed(String email, String login) {
+        if (userRepository.isProfileExistByEmailAndLogin(email, login)) {
+            throw new CustomException(ExceptionType.ALREADY_EXISTS, "Email or login is already used");
         }
     }
 }

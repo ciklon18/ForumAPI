@@ -53,7 +53,7 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
         LIMIT 1
         """
     )
-    Category getCategoryIfLastLevel(UUID categoryId);
+    Optional<Category> getCategoryIfLastLevel(UUID categoryId);
 
     @Query(nativeQuery = true, value = """
     SELECT * FROM category c

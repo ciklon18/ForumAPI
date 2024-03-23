@@ -1,5 +1,7 @@
 package com.forum.core.service;
 
+import com.common.exception.CustomException;
+import com.common.exception.ExceptionType;
 import com.forum.api.dto.TopicCreateDto;
 import com.forum.api.dto.TopicDto;
 import com.forum.api.dto.TopicPaginationResponse;
@@ -11,7 +13,6 @@ import com.forum.core.repository.CategoryRepository;
 import com.forum.core.repository.TopicRepository;
 import com.forum.integration.user.UserClient;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,14 +28,12 @@ public class TopicService {
     private final CategoryRepository categoryRepository;
     private final TopicMapper topicMapper;
     private final UserClient userClient;
-    public UUID createTopic(TopicCreateDto topicCreateDto, UUID authorId) throws BadRequestException {
+    public UUID createTopic(TopicCreateDto topicCreateDto, UUID authorId) {
         if (!userClient.checkUserExisingById(authorId)){
-            throw new BadRequestException("Author not found");
+            throw new CustomException(ExceptionType.BAD_REQUEST, "User not found");
         }
-        Category category = categoryRepository.getCategoryIfLastLevel(topicCreateDto.categoryId());
-        if (category == null) {
-            throw new IllegalArgumentException("Wrong category id");
-        }
+        Category category = categoryRepository.getCategoryIfLastLevel(topicCreateDto.categoryId())
+                .orElseThrow(() -> new CustomException(ExceptionType.BAD_REQUEST, "Wrong category id"));
         isTopicNameOriginal(topicCreateDto.name());
         Topic topic = topicMapper.map(topicCreateDto, category, authorId);
         topicRepository.save(topic);
@@ -43,7 +42,8 @@ public class TopicService {
 
     public void updateTopic(UUID topicId, TopicUpdateDto topicUpdateDto) {
         isTopicNameOriginal(topicUpdateDto.name());
-        Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new RuntimeException("Topic not found"));
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "Topic not found"));
         Topic updatedTopic = topicMapper.map(topicUpdateDto, topic);
         topicRepository.save(updatedTopic);
     }
@@ -70,7 +70,7 @@ public class TopicService {
 
     private void isTopicNameOriginal(String name) {
         topicRepository.findByName(name).ifPresent(topic -> {
-            throw new IllegalArgumentException("Topic with name " + name + " already exists");
+            throw new CustomException(ExceptionType.ALREADY_EXISTS, "Topic with this name already exists");
         });
     }
 }

@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.service.spi.ServiceException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,7 @@ import java.util.function.Function;
 import static com.common.security.constant.SecurityConstants.AUTHORITIES;
 import static com.common.security.constant.SecurityConstants.LOGIN;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @EnableConfigurationProperties(JwtProperties.class)
@@ -38,24 +39,17 @@ public class JwtService {
     }
 
     public Claims extractAllClaims(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            throw new ServiceException(e.getMessage());
-        }
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        try {
-            final Claims claims = extractAllClaims(token);
-            return claimsResolver.apply(claims);
-        } catch (Exception e) {
-            throw new ServiceException(e.getMessage());
-        }
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
     public List<String> extractAuthorities(String token) {
@@ -71,12 +65,8 @@ public class JwtService {
     }
 
     public boolean validateToken(String token) {
-        try {
-            Date expiration = extractExpiration(token);
-            return expiration.after(new Date());
-        } catch (Exception e) {
-            throw new ServiceException(e.getMessage());
-        }
+        Date expiration = extractExpiration(token);
+        return expiration.after(new Date());
     }
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);

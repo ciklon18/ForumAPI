@@ -2,7 +2,7 @@ package com.common.security.config;
 
 import com.common.auth.annotation.EnableJwtTokenFilter;
 import com.common.auth.jwt.JwtTokenFilter;
-import com.common.error.CustomAccessDeniedHandler;
+import com.common.exception.handler.EnableApiExceptionHandler;
 import com.common.security.constant.ApiPaths;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -24,11 +24,12 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import static com.common.security.constant.SecurityConstants.AUTH_WHITELIST;
 
 @Configuration
+@Slf4j
 @RequiredArgsConstructor
 @EnableJwtTokenFilter
+@EnableApiExceptionHandler
 @EnableWebSecurity
 @EnableMethodSecurity
-@Slf4j
 public class SecurityConfig {
 
     @Bean
@@ -36,7 +37,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             JwtTokenFilter jwtTokenFilter,
-            CustomAccessDeniedHandler customAccessDeniedHandler,
             AuthenticationEntryPoint authenticationEntryPoint
             ) {
         return http
@@ -46,7 +46,6 @@ public class SecurityConfig {
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(c -> c
                         .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(request ->
                                         request.requestMatchers(AUTH_WHITELIST).permitAll()
@@ -59,10 +58,6 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    public CustomAccessDeniedHandler customAccessDeniedHandler() {
-        return new CustomAccessDeniedHandler();
-    }
 
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {

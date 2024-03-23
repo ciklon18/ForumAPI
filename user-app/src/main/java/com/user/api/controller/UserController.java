@@ -1,17 +1,17 @@
 package com.user.api.controller;
 
-import com.common.error.ErrorCode;
 import com.user.api.constant.ApiPaths;
 import com.user.api.dto.JwtAuthorityDto;
 import com.user.api.dto.LoginRequestDto;
 import com.user.api.dto.RegistrationRequestDto;
 import com.user.core.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.service.spi.ServiceException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -20,19 +20,11 @@ public class UserController {
 
     @PostMapping(ApiPaths.REGISTER)
     public JwtAuthorityDto register(@RequestBody RegistrationRequestDto registrationRequestDto) {
-        try {
-            return userService.register(registrationRequestDto);
-        } catch (Exception e){
-            throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
-        }
+        return userService.register(registrationRequestDto);
     }
 
     @PostMapping(ApiPaths.LOGIN)
     public JwtAuthorityDto login(@RequestBody LoginRequestDto loginRequestDto) {
-        try {
-            return userService.login(loginRequestDto);
-        } catch (Exception e){
-            throw new ServiceException(ErrorCode.INTERNAL_ERROR.getCode());
-        }
+        return userService.login(loginRequestDto);
     }
 }

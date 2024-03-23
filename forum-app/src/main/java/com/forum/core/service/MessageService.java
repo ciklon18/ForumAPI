@@ -1,5 +1,7 @@
 package com.forum.core.service;
 
+import com.common.exception.CustomException;
+import com.common.exception.ExceptionType;
 import com.forum.api.dto.MessageCreateDto;
 import com.forum.api.dto.MessageDto;
 import com.forum.api.dto.MessagePaginationResponse;
@@ -11,8 +13,6 @@ import com.forum.core.repository.MessageRepository;
 import com.forum.core.repository.TopicRepository;
 import com.forum.integration.user.UserClient;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.BadRequestException;
-import org.hibernate.service.spi.ServiceException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +31,12 @@ public class MessageService {
     private final MessageMapper messageMapper;
     private final UserClient userClient;
 
-    public void createMessage(MessageCreateDto messageCreateDto, UUID authorId) throws BadRequestException {
+    public void createMessage(MessageCreateDto messageCreateDto, UUID authorId) {
         if (!userClient.checkUserExisingById(authorId)){
-            throw new BadRequestException("Author not found");
+            throw new CustomException(ExceptionType.BAD_REQUEST, "User not found");
         }
         Topic topic = topicRepository.findById(messageCreateDto.topicId())
-                .orElseThrow(() -> new RuntimeException("Topic not found"));
+                .orElseThrow(() -> new CustomException(ExceptionType.BAD_REQUEST, "Topic not found"));
         Message message = messageMapper.map(messageCreateDto, authorId, topic);
 
         messageRepository.save(message);
@@ -44,7 +44,7 @@ public class MessageService {
 
     public void updateMessage(UUID messageId, MessageUpdateDto messageUpdateDto) {
         Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new RuntimeException("Message not found"));
+                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "Message not found"));
         Message updatedMessage = messageMapper.map(messageUpdateDto, message);
         messageRepository.save(updatedMessage);
     }
@@ -55,23 +55,20 @@ public class MessageService {
 
     public MessagePaginationResponse getMessagesByTopic(UUID topicId, Integer pageNumber, Integer pageSize) {
         isTopicExist(topicId);
-        Integer totalPagesAmount = (int) Math.ceil((double) messageRepository.getMessagesCount(topicId) / pageSize);
 
+        Integer totalPagesAmount = (int) Math.ceil((double) messageRepository.getMessagesCount(topicId) / pageSize);
         pageNumber = pageNumber <= totalPagesAmount ? pageNumber : totalPagesAmount;
         Integer offset = (Math.max((pageNumber - 1), 0)) * pageSize;
+
+        List<MessageDto> messages = messageRepository.getMessagesByTopic(topicId, offset, pageSize)
+                .stream()
+                .map(messageMapper::map)
+                .toList();
         return MessagePaginationResponse.builder()
-                .messages(messageRepository.getMessagesByTopic(topicId, offset, pageSize)
-                                  .stream()
-                                  .map(messageMapper::map)
-                                  .toList())
+                .messages(messages)
                 .pageNumber(pageNumber)
                 .totalPagesAmount(totalPagesAmount)
                 .build();
-    }
-
-    private void isTopicExist(UUID topicId) {
-        topicRepository.findById(topicId)
-                .orElseThrow(() -> new RuntimeException("Topic not found"));
     }
 
     public List<MessageDto> getMessages(
@@ -83,9 +80,7 @@ public class MessageService {
             UUID categoryId
     ) {
         if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
-            throw new ServiceException(
-                    String.format("fromDate \"%s\" должна быть раньше fromDate \"%s\"", fromDate, toDate)
-            );
+            throw new CustomException(ExceptionType.BAD_REQUEST, "From date should be before to date");
         }
 
         return messageRepository.getFilteredMessages(text, fromDate, toDate, authorId, topicId,
@@ -100,5 +95,10 @@ public class MessageService {
                 .stream()
                 .map(messageMapper::map)
                 .toList();
+    }
+
+    private void isTopicExist(UUID topicId) {
+        topicRepository.findById(topicId)
+                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "Topic not found"));
     }
 }

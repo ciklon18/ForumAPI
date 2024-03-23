@@ -8,7 +8,6 @@ import com.forum.api.dto.TopicUpdateDto;
 import com.forum.core.service.TopicService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +19,10 @@ public class TopicController {
     private final TopicService topicService;
 
     @PostMapping(ApiPaths.TOPIC)
-    public UUID createTopic(@Valid @RequestBody TopicCreateDto topic, @RequestParam UUID authorId) throws BadRequestException {
+    public UUID createTopic(
+            @Valid @RequestBody TopicCreateDto topic,
+            @RequestParam UUID authorId
+    ) {
         return topicService.createTopic(topic, authorId);
     }
 
