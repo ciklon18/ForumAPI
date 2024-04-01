@@ -72,7 +72,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         Claims claims = jwtUtils.extractAllClaims(token);
         if (claims == null) {
             return JwtAuthentication.builder()
-                    .isAuthenticated(false)
+                    .authenticated(false)
                     .build();
         }
         Set<Role> roles = jwtUtils.extractAuthorities(token)
@@ -80,7 +80,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 .map(Role::valueOf)
                 .collect(Collectors.toSet());
         return JwtAuthentication.builder()
-                .isAuthenticated(true)
+                .authenticated(true)
                 .id(UUID.fromString(jwtUtils.getSubject(token)))
                 .roles(roles)
                 .build();
@@ -91,7 +91,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 request.getRequestURI().contains(ApiPaths.REGISTER);
     }
     private void setAuthenticationForAuthenticationRequest() {
-        JwtAuthentication auth = JwtAuthentication.builder().isAuthenticated(true).build();
+        JwtAuthentication auth = JwtAuthentication.builder().authenticated(true).build();
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }

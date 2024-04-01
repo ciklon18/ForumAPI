@@ -14,7 +14,7 @@ import java.util.UUID;
 @Setter
 @Builder
 public class JwtAuthentication implements Authentication {
-    private boolean isAuthenticated;
+    private boolean authenticated;
     private UUID id;
     private Set<Role> roles;
 
@@ -39,12 +39,12 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public boolean isAuthenticated() {
-        return isAuthenticated;
+        return authenticated;
     }
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-
+        this.authenticated = isAuthenticated;
     }
 
     @Override

@@ -17,7 +17,7 @@ logging:
   level:
     org:
       springframework:
-        security: ${LOGGING_LEVEL_SPRING_FRAMEWORK_SECURITY}
+        security: DEBUG
 
 jwt:
   secret: ${JWT_SECRET}
