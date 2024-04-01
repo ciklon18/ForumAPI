@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+
 public class IntegrationController {
 
     private final IntegrationService integrationService;

@@ -25,7 +25,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiError> handle(CustomException e) {
         log.error("CustomException occurred: {}", e.getMessage());
         ApiError apiError = new ApiError(getStatus(e.getType()), e.getMessage());
-        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);    }
+        return new ResponseEntity<>(apiError, getStatus(e.getType()));
+    }
 
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<ApiError> handle(Exception e) {

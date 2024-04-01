@@ -90,6 +90,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         return request.getRequestURI().contains(ApiPaths.LOGIN) ||
                 request.getRequestURI().contains(ApiPaths.REGISTER);
     }
+
     private void setAuthenticationForAuthenticationRequest() {
         JwtAuthentication auth = JwtAuthentication.builder().authenticated(true).build();
         SecurityContextHolder.getContext().setAuthentication(auth);

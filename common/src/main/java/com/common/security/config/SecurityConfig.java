@@ -2,7 +2,6 @@ package com.common.security.config;
 
 import com.common.auth.annotation.EnableJwtTokenFilter;
 import com.common.auth.jwt.JwtTokenFilter;
-import com.common.exception.handler.EnableApiExceptionHandler;
 import com.common.security.constant.ApiPaths;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,7 +26,6 @@ import static com.common.security.constant.SecurityConstants.AUTH_WHITELIST;
 @Slf4j
 @RequiredArgsConstructor
 @EnableJwtTokenFilter
-@EnableApiExceptionHandler
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {

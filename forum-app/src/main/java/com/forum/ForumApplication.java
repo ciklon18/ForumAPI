@@ -1,6 +1,7 @@
 package com.forum;
 
 
+import com.common.exception.handler.EnableApiExceptionHandler;
 import com.common.security.annotation.EnableSpringSecurity;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ConfigurationPropertiesScan("com.forum")
 @EnableFeignClients
 @EnableSpringSecurity
+@EnableApiExceptionHandler
 @SpringBootApplication(scanBasePackages={"com.forum"})
 public class ForumApplication {
     public static void main(String[] args) {
