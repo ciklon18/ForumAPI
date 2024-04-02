@@ -12,6 +12,10 @@ spring:
     user: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:123}
     baseline-on-migrate: true
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}
+    show-sql: true
 
 jwt:
   secret: ${JWT_SECRET:secret}
@@ -21,5 +25,5 @@ logging:
   level:
     org:
       springframework:
-        security: TRACE
+        security: ${LOGGING_LEVEL_SPRING_SECURITY:TRACE}
 

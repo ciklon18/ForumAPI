@@ -16,9 +16,12 @@ spring:
         ${REDIS_HOST:localhost}
       port:
         ${REDIS_PORT:6379}
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}
 
 logging:
   level:
     org:
       springframework:
-        security: TRACE
+        security: ${LOGGING_LEVEL_SPRING_SECURITY:TRACE}
