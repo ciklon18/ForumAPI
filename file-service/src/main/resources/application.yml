@@ -1,8 +1,8 @@
 minio:
   access-key: 46EKLZkR1FehlOExHCAx
   secret-key: XGYGusj5k236B2PUZk4DlybTkzBSdpviNFMTY9Qz
-  bucket: file-bucket
-  url: http://localhost:9900
+  bucket: ${MINIO_BUCKET:file-service}
+  url: ${MINIO_URL:http://localhost:9000}
 
 server:
   port: 8080

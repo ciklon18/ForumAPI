@@ -2,23 +2,23 @@ server:
   port: ${COMMON_APP_PORT}
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration-time: ${JWT_EXPIRATION_TIME}
+  secret: ${JWT_SECRET:secret}
+  expiration-time: ${JWT_EXPIRATION_TIME:86400000}
 
 spring:
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/messenger}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:123}
   data:
     redis:
       host:
-        ${REDIS_HOST}
+        ${REDIS_HOST:localhost}
       port:
-        ${REDIS_PORT}
+        ${REDIS_PORT:6379}
 
 logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: TRACE

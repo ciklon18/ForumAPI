@@ -3,22 +3,23 @@ server:
 
 spring:
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/messenger}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:123}
     driver-class-name: org.postgresql.Driver
   flyway:
-    url: ${DATABASE_URL}
-    user: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/messenger}
+    user: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:123}
     baseline-on-migrate: true
+
+jwt:
+  secret: ${JWT_SECRET:secret}
+  expiration-time: ${JWT_EXPIRATION_TIME:86400000}
 
 logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: TRACE
 
-jwt:
-  secret: ${JWT_SECRET}
-  expiration-time: ${JWT_EXPIRATION_TIME}
