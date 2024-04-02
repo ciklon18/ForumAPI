@@ -1,5 +1,5 @@
 server:
-  port: ${COMMON_APP_PORT}
+  port: ${COMMON_APP_PORT:9442}
 
 jwt:
   secret: ${JWT_SECRET:secret}

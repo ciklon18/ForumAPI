@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan("com.fileservice")
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
 @EnableApiExceptionHandler
-
 public class FileServiceApplication {
 
     public static void main(String[] args) {

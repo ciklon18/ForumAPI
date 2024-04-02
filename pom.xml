@@ -21,6 +21,7 @@
         <module>forum-app</module>
         <module>file-service</module>
         <module>common</module>
+        <module>gateway-app</module>
     </modules>
 
     <properties>
@@ -35,6 +36,7 @@
         <flyway.version>10.9.1</flyway.version>
         <feign.version>4.1.0</feign.version>
         <openfeign.version>13.2.1</openfeign.version>
+        <spring-cloud.version>4.1.2</spring-cloud.version>
     </properties>
 
     <dependencyManagement>
@@ -145,6 +147,12 @@
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring-security.version}</version>
+            </dependency>
+<!--            cloud gateway starter-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-gateway</artifactId>
+                <version>${spring-cloud.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

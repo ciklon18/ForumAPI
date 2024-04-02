@@ -1,4 +1,4 @@
-package com.fileservice.entity;
+package com.fileservice.core.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
