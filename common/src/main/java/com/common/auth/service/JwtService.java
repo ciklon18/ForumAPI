@@ -1,6 +1,8 @@
 package com.common.auth.service;
 
 import com.common.auth.props.JwtProperties;
+import com.common.exception.CustomException;
+import com.common.exception.ExceptionType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -39,12 +41,16 @@ public class JwtService {
     }
 
     public Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            log.error("Token is not valid: {}", e.getMessage());
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "Token is not valid");
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -65,9 +71,15 @@ public class JwtService {
     }
 
     public boolean validateToken(String token) {
-        Date expiration = extractExpiration(token);
-        return expiration.after(new Date());
+        try {
+            Date expiration = extractExpiration(token);
+            return expiration.after(new Date());
+        } catch (Exception e) {
+            log.error("Token is not valid: {}", e.getMessage());
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "Token is expired or invalid");
+        }
     }
+
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }

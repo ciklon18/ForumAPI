@@ -3,6 +3,7 @@ package com.common.auth.jwt;
 import com.common.auth.annotation.EnableJwtUtils;
 import com.common.auth.util.JwtUtils;
 import com.common.exception.CustomException;
+import com.common.exception.ExceptionType;
 import com.common.security.constant.ApiPaths;
 import com.common.security.constant.SecurityConstants;
 import io.jsonwebtoken.Claims;
@@ -45,14 +46,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
         } catch (CustomException ex){
             log.error("CustomException occurred: {}", ex.getMessage());
-            response.getWriter().write(ex.getMessage());
-            response.setStatus(401);
-            return;
+            throw new CustomException(ex.getType(), ex.getMessage());
         } catch (Exception ex) {
             log.error("Exception occurred: {}", ex.getMessage());
-            response.getWriter().write("Exception occurred: " + ex.getMessage());
-            response.setStatus(401);
-            return;
+            throw new CustomException(ExceptionType.FATAL, "Internal error occurred");
         }
         filterChain.doFilter(request, response);
     }
