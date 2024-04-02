@@ -19,7 +19,7 @@
     <modules>
         <module>user-app</module>
         <module>forum-app</module>
-        <module>file-service</module>
+        <module>file-app</module>
         <module>common</module>
         <module>gateway-app</module>
     </modules>

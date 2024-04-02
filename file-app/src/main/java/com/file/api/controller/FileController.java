@@ -1,9 +1,9 @@
-package com.fileservice.api.controller;
+package com.file.api.controller;
 
 
-import com.fileservice.api.constant.ApiPaths;
-import com.fileservice.api.dto.FileDataDto;
-import com.fileservice.core.service.IFileService;
+import com.file.api.constant.ApiPaths;
+import com.file.api.dto.FileDataDto;
+import com.file.core.service.IFileService;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @AllArgsConstructor
-public class FileServiceController {
+public class FileController {
 
     private final IFileService fileService;
 

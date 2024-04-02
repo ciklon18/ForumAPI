@@ -1,6 +1,6 @@
-package com.fileservice.core.repository;
+package com.file.core.repository;
 
-import com.fileservice.core.entity.File;
+import com.file.core.entity.File;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 

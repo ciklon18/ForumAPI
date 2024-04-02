@@ -1,10 +1,10 @@
-package com.fileservice.core.service;
+package com.file.core.service;
 
 
-import com.fileservice.api.dto.FileDataDto;
-import com.fileservice.config.MinioConfig;
-import com.fileservice.core.entity.File;
-import com.fileservice.core.repository.FileRepository;
+import com.file.api.dto.FileDataDto;
+import com.file.config.MinioConfig;
+import com.file.core.entity.File;
+import com.file.core.repository.FileRepository;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;

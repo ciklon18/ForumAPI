@@ -1,4 +1,4 @@
-package com.fileservice.api.constant;
+package com.file.api.constant;
 
 import lombok.NoArgsConstructor;
 
