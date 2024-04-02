@@ -1,8 +1,9 @@
-package com.fileservice.controller;
+package com.fileservice.api.controller;
 
 
-import com.fileservice.dto.FileDataDto;
-import com.fileservice.service.IFileService;
+import com.fileservice.api.constant.ApiPaths;
+import com.fileservice.api.dto.FileDataDto;
+import com.fileservice.core.service.IFileService;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/file-storage")
 @AllArgsConstructor
 public class FileServiceController {
 
     private final IFileService fileService;
 
     @SneakyThrows
-    @PostMapping("/upload")
+    @PostMapping(ApiPaths.UPLOAD)
     public FileDataDto uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("fileName") String fileName
@@ -30,7 +30,7 @@ public class FileServiceController {
     }
 
     @SneakyThrows
-    @GetMapping(value = "/download/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = ApiPaths.DOWNLOAD, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> downloadFile(@PathVariable String id) {
         var data = fileService.getFileInfoById(id);
         var file = fileService.downloadFile(id);

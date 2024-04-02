@@ -1,7 +1,7 @@
-package com.fileservice.service;
+package com.fileservice.core.service;
 
 
-import com.fileservice.dto.FileDataDto;
+import com.fileservice.api.dto.FileDataDto;
 
 public interface IFileService {
     FileDataDto uploadFile(byte[] file, String fileName);

@@ -1,5 +1,5 @@
 server:
-  port: ${FORUM_APP_PORT}
+  port: ${FORUM_APP_PORT:9445}
 
 spring:
   datasource:

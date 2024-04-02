@@ -5,7 +5,7 @@ minio:
   url: http://localhost:9900
 
 server:
-  port: 8080
+  port: ${FILE_APP_PORT:9446}
 
 spring:
   servlet:

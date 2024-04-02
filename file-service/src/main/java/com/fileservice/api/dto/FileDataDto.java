@@ -1,4 +1,4 @@
-package com.fileservice.dto;
+package com.fileservice.api.dto;
 
 
 import lombok.*;
