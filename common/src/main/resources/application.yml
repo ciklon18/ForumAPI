@@ -2,8 +2,10 @@ server:
   port: ${COMMON_APP_PORT:9442}
 
 jwt:
-  secret: ${JWT_SECRET:secret}
-  expiration-time: ${JWT_EXPIRATION_TIME:86400000}
+  access-secret: ${JWT_ACCESS_SECRET:access}
+  access-expiration-time: ${JWT_ACCESS_EXPIRATION_TIME:86400000}
+  refresh-secret: ${JWT_REFRESH_SECRET:refresh}
+  refresh-expiration-time: ${JWT_REFRESH_EXPIRATION_TIME:604800000}
 
 spring:
   datasource:

@@ -25,7 +25,7 @@ public class JwtUtils {
     private final JwtService jwtService;
 
     public void saveToken(String key, String value) {
-        tokenRepository.save(key, value, jwtProperties.getExpirationTime());
+        tokenRepository.save(key, value, jwtProperties.getRefreshExpirationTime());
     }
 
     public Boolean checkToken(String key) {
@@ -40,8 +40,16 @@ public class JwtUtils {
         return tokenRepository.getToken(key);
     }
 
-    public String generateToken(String login, List<String> roles, UUID id) {
-        return jwtService.generateToken(id.toString(), login, roles);
+    public String generateAccessToken(String login, UUID userId, List<String> roles) {
+        return jwtService.generateAccessToken(userId.toString(), login, roles);
+    }
+
+    public String getOrGenerateRefreshToken(String login, UUID userId) {
+        String token = tokenRepository.getToken(userId.toString());
+        if (token != null && validateToken(token)) {
+            return token;
+        }
+        return jwtService.generateRefreshToken(userId.toString(), login);
     }
 
     public Claims extractAllClaims(String token) {

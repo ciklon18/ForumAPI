@@ -7,6 +7,7 @@ import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
 import com.user.api.dto.JwtAuthorityDto;
 import com.user.api.dto.LoginRequestDto;
+import com.user.api.dto.LogoutRequestDto;
 import com.user.api.dto.RegistrationRequestDto;
 import com.user.core.entity.User;
 import com.user.core.entity.UserAuthority;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -36,66 +36,85 @@ public class UserService {
     private final JwtUtils jwtUtils;
 
     public JwtAuthorityDto register(RegistrationRequestDto registrationRequestDto) {
-        isEmailAndLoginAlreadyUsed(registrationRequestDto.email(), registrationRequestDto.login());
-
+        isLoginAlreadyUsed(registrationRequestDto.login());
         User user = userMapper.map(registrationRequestDto, UUID.randomUUID(),
                                    passwordEncoder.encode(registrationRequestDto.password()));
-        String token = generateAndSaveToken(user.getLogin(), user.getId());
+        String accessToken =
+                jwtUtils.generateAccessToken(user.getLogin(), user.getId(), List.of(Role.BASE_ROLE.getAuthority()));
+        String refreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), user.getId());
+        jwtUtils.saveToken(user.getId().toString(), refreshToken);
         userRepository.save(user);
         setNewUserAuthorities(registrationRequestDto.email());
-        return new JwtAuthorityDto(user.getId(), token);
+        return new JwtAuthorityDto(user.getId(), accessToken, refreshToken);
     }
 
     public JwtAuthorityDto login(LoginRequestDto loginRequestDto) {
-        isEmailExist(loginRequestDto.email());
-        User user = getUserIfPasswordCorrect(loginRequestDto.password(), loginRequestDto.email());
-        String token = generateAndSaveToken(user);
-        return new JwtAuthorityDto(user.getId(), token);
-    }
-
-    private String generateAndSaveToken(String login, UUID userId) {
-        String token = jwtUtils.generateToken(
-                login,
-                Stream.of(Role.BASE_ROLE.getAuthority()).toList(),
-                userId
-        );
-        jwtUtils.saveToken(userId.toString(), token);
-        return token;
-    }
-
-    private void setNewUserAuthorities(String email) {
-        User savedUser = userRepository.findByEmail(email);
-        authorityRepository.save(authorityMapper.map(savedUser, Role.BASE_ROLE.getAuthority()));
-    }
-
-    private String generateAndSaveToken(User user) {
+        isLoginExist(loginRequestDto.login());
+        User user = getUserIfPasswordCorrect(loginRequestDto.login(), loginRequestDto.password());
         List<String> roles = authorityRepository.findAllByUserId(user.getId())
                 .stream()
                 .map(UserAuthority::getRole)
                 .toList();
-        String token = jwtUtils.generateToken(user.getLogin(), roles, user.getId());
-        jwtUtils.saveToken(user.getId().toString(), token);
-        return token;
+        String accessToken =
+                jwtUtils.generateAccessToken(user.getLogin(), user.getId(), roles);
+        String refreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), user.getId());
+        jwtUtils.saveToken(user.getId().toString(), refreshToken);
+        return new JwtAuthorityDto(user.getId(), accessToken, refreshToken);
     }
 
-    private User getUserIfPasswordCorrect(String requestPassword, String email) {
-        User user = userRepository.findByEmail(email);
+    public void logout(LogoutRequestDto logoutRequestDto) {
+        jwtUtils.deleteToken(logoutRequestDto.userId().toString());
+    }
+
+    public String getAccessToken(String refreshToken) {
+        if (!jwtUtils.checkToken(refreshToken)) {
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "Refresh token is invalid");
+        }
+        String login = jwtUtils.getSubject(refreshToken);
+        User user = userRepository.findByLogin(login);
+        List<String> roles = authorityRepository.findAllByUserId(user.getId())
+                .stream()
+                .map(UserAuthority::getRole)
+                .toList();
+        return jwtUtils.generateAccessToken(user.getLogin(), user.getId(), roles);
+    }
+
+    public String refresh(String refreshToken) {
+        if (!jwtUtils.checkToken(refreshToken)) {
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "Refresh token is invalid");
+        }
+        String login = jwtUtils.getSubject(refreshToken);
+        User user = userRepository.findByLogin(login);
+        jwtUtils.deleteToken(user.getId().toString());
+        String newRefreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), user.getId());
+        jwtUtils.saveToken(user.getId().toString(), newRefreshToken);
+        return newRefreshToken;
+    }
+
+    private void setNewUserAuthorities(String login) {
+        User savedUser = userRepository.findByLogin(login);
+        authorityRepository.save(authorityMapper.map(savedUser, Role.BASE_ROLE.getAuthority()));
+    }
+
+    private User getUserIfPasswordCorrect(String login, String requestPassword) {
+        User user = userRepository.findByLogin(login);
         if (!passwordEncoder.matches(requestPassword, user.getPassword())) {
             throw new CustomException(ExceptionType.UNAUTHORIZED, "Password is incorrect");
         }
         return user;
     }
 
-
-    private void isEmailExist(String email) {
-        if (!userRepository.isProfileExistByEmail(email)) {
-            throw new CustomException(ExceptionType.NOT_FOUND, "Email is not found");
+    private void isLoginExist(String login) {
+        if (!userRepository.isProfileExistByLogin(login)) {
+            throw new CustomException(ExceptionType.NOT_FOUND, "Login is not found");
         }
     }
 
-    private void isEmailAndLoginAlreadyUsed(String email, String login) {
-        if (userRepository.isProfileExistByEmailAndLogin(email, login)) {
-            throw new CustomException(ExceptionType.ALREADY_EXISTS, "Email or login is already used");
+    private void isLoginAlreadyUsed(String login) {
+        if (userRepository.isProfileExistByLogin(login)) {
+            throw new CustomException(ExceptionType.ALREADY_EXISTS, "Login is already used");
         }
     }
+
+
 }
