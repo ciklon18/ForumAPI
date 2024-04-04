@@ -13,19 +13,17 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "authorities")
-public class UserAuthority {
+@Table(name = "authority")
+public class Authority {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "role")
     private String role;
-
 
     @PrePersist
     public void ensureIdAssigned() {
