@@ -10,12 +10,8 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.email = :email")
-    boolean isProfileExistByEmail(@Param("email") String email);
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.login = :login")
+    boolean isProfileExistByLogin(@Param("login") String login);
 
-    User findByEmail(String email);
-
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.email = :email OR u.login = :login")
-
-    boolean isProfileExistByEmailAndLogin(@Param("email")String email, @Param("login") String login);
+    User findByLogin(String login);
 }

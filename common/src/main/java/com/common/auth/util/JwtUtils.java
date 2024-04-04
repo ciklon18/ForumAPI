@@ -11,7 +11,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -25,7 +24,7 @@ public class JwtUtils {
     private final JwtService jwtService;
 
     public void saveToken(String key, String value) {
-        tokenRepository.save(key, value, jwtProperties.getExpirationTime());
+        tokenRepository.save(key, value, jwtProperties.getRefreshExpirationTime());
     }
 
     public Boolean checkToken(String key) {
@@ -40,8 +39,16 @@ public class JwtUtils {
         return tokenRepository.getToken(key);
     }
 
-    public String generateToken(String login, List<String> roles, UUID id) {
-        return jwtService.generateToken(id.toString(), login, roles);
+    public String generateAccessToken(String login, UUID userId, String role) {
+        return jwtService.generateAccessToken(userId.toString(), login, role);
+    }
+
+    public String getOrGenerateRefreshToken(String login, UUID userId) {
+        String token = tokenRepository.getToken(userId.toString());
+        if (token != null && validateToken(token)) {
+            return token;
+        }
+        return jwtService.generateRefreshToken(userId.toString(), login);
     }
 
     public Claims extractAllClaims(String token) {
