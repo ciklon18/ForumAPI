@@ -1,7 +1,7 @@
-package com.forum.config;
+package com.common.integration.config;
 
+import com.common.integration.utils.RetreiveMessageErrorDecoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forum.integration.utils.RetreiveMessageErrorDecoder;
 import feign.Client;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
@@ -29,6 +29,11 @@ public class ClientConfig {
     @Bean
     public Client feignClient() {
         return new Client.Default(null, null);
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 
     @Bean

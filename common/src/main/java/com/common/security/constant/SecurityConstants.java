@@ -15,7 +15,7 @@ public class SecurityConstants {
             "/webjars/**"
     };
 
-    public static final String AUTHORITIES = "authorities";
+    public static final String ROLE = "role";
 
     public static final String LOGIN = "login";
 }

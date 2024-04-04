@@ -1,4 +1,4 @@
-package com.forum.integration.utils;
+package com.common.integration.utils;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
