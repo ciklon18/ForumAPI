@@ -18,8 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.common.security.constant.SecurityConstants.AUTHORITIES;
 import static com.common.security.constant.SecurityConstants.LOGIN;
+import static com.common.security.constant.SecurityConstants.ROLE;
 
 @Slf4j
 @Service
@@ -29,10 +29,10 @@ public class JwtService {
 
     private final JwtProperties jwtProperties;
 
-    public String generateAccessToken(String userId, String login, List<String> authorities) {
+    public String generateAccessToken(String userId, String login, String role) {
         return Jwts.builder()
                 .setSubject(userId)
-                .claim(AUTHORITIES, authorities)
+                .claim(ROLE, role)
                 .claim(LOGIN, login)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessExpirationTime()))
@@ -70,7 +70,7 @@ public class JwtService {
 
     public List<String> extractAuthorities(String token) {
         try {
-            return extractClaim(token, claims -> claims.get(AUTHORITIES, List.class));
+            return extractClaim(token, claims -> claims.get(ROLE, List.class));
         } catch (Exception e) {
             log.error("Token is not valid: {}", e.getMessage());
             throw new CustomException(ExceptionType.UNAUTHORIZED, "Token is not valid");

@@ -10,16 +10,12 @@ import com.user.api.dto.LoginRequestDto;
 import com.user.api.dto.LogoutRequestDto;
 import com.user.api.dto.RegistrationRequestDto;
 import com.user.core.entity.User;
-import com.user.core.entity.UserAuthority;
-import com.user.core.mapper.AuthorityMapper;
 import com.user.core.mapper.UserMapper;
-import com.user.core.repository.AuthorityRepository;
 import com.user.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,10 +23,8 @@ import java.util.UUID;
 @EnableJwtUtils
 public class UserService {
     private final UserRepository userRepository;
-    private final AuthorityRepository authorityRepository;
-
+    private final AuthorityService authorityService;
     private final UserMapper userMapper;
-    private final AuthorityMapper authorityMapper;
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
@@ -40,23 +34,20 @@ public class UserService {
         User user = userMapper.map(registrationRequestDto, UUID.randomUUID(),
                                    passwordEncoder.encode(registrationRequestDto.password()));
         String accessToken =
-                jwtUtils.generateAccessToken(user.getLogin(), user.getId(), List.of(Role.BASE_ROLE.getAuthority()));
+                jwtUtils.generateAccessToken(user.getLogin(), user.getId(), Role.BASE_ROLE.getAuthority());
         String refreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), user.getId());
         jwtUtils.saveToken(user.getId().toString(), refreshToken);
         userRepository.save(user);
-        setNewUserAuthorities(registrationRequestDto.email());
+        setNewUserAuthorities(user.getId());
         return new JwtAuthorityDto(user.getId(), accessToken, refreshToken);
     }
 
     public JwtAuthorityDto login(LoginRequestDto loginRequestDto) {
         isLoginExist(loginRequestDto.login());
         User user = getUserIfPasswordCorrect(loginRequestDto.login(), loginRequestDto.password());
-        List<String> roles = authorityRepository.findAllByUserId(user.getId())
-                .stream()
-                .map(UserAuthority::getRole)
-                .toList();
+        String role = authorityService.getUserAuthorities(user.getId());
         String accessToken =
-                jwtUtils.generateAccessToken(user.getLogin(), user.getId(), roles);
+                jwtUtils.generateAccessToken(user.getLogin(), user.getId(), role);
         String refreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), user.getId());
         jwtUtils.saveToken(user.getId().toString(), refreshToken);
         return new JwtAuthorityDto(user.getId(), accessToken, refreshToken);
@@ -72,11 +63,8 @@ public class UserService {
         }
         String login = jwtUtils.getSubject(refreshToken);
         User user = userRepository.findByLogin(login);
-        List<String> roles = authorityRepository.findAllByUserId(user.getId())
-                .stream()
-                .map(UserAuthority::getRole)
-                .toList();
-        return jwtUtils.generateAccessToken(user.getLogin(), user.getId(), roles);
+        String role = authorityService.getUserAuthorities(user.getId());
+        return jwtUtils.generateAccessToken(user.getLogin(), user.getId(), role);
     }
 
     public String refresh(String refreshToken) {
@@ -91,9 +79,8 @@ public class UserService {
         return newRefreshToken;
     }
 
-    private void setNewUserAuthorities(String login) {
-        User savedUser = userRepository.findByLogin(login);
-        authorityRepository.save(authorityMapper.map(savedUser, Role.BASE_ROLE.getAuthority()));
+    private void setNewUserAuthorities(UUID userId) {
+        authorityService.setNewUserAuthorities(userId, Role.BASE_ROLE.getAuthority());
     }
 
     private User getUserIfPasswordCorrect(String login, String requestPassword) {
@@ -116,5 +103,15 @@ public class UserService {
         }
     }
 
-
+//    public void createUser(RegistrationRequestDto registrationRequestDto) {
+//    }
+//
+//    public void updateUser(UpdateUserRequestDto updateUserRequestDto) {
+//    }
+//
+//    public void deleteUser(String userId) {
+//    }
+//
+//    public void blockUser(String userId) {
+//    }
 }

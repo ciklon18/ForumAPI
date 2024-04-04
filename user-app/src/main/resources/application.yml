@@ -3,12 +3,12 @@ server:
 
 spring:
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/messenger}
+    url: ${USER_DATABASE_URL:jdbc:postgresql://localhost:5432/user_db}
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:123}
     driver-class-name: org.postgresql.Driver
   flyway:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/messenger}
+    url: ${USER_DATABASE_URL:jdbc:postgresql://localhost:5432/user_db}
     user: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:123}
     baseline-on-migrate: true
@@ -16,10 +16,6 @@ spring:
     hibernate:
       ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}
     show-sql: true
-
-jwt:
-  secret: ${JWT_SECRET:secret}
-  expiration-time: ${JWT_EXPIRATION_TIME:86400000}
 
 logging:
   level:
