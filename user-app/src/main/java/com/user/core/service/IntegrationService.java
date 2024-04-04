@@ -1,5 +1,7 @@
-package com.user.integration.service;
+package com.user.core.service;
 
+import com.common.exception.CustomException;
+import com.common.exception.ExceptionType;
 import com.user.api.dto.UserDto;
 import com.user.core.mapper.UserMapper;
 import com.user.core.repository.UserRepository;
@@ -14,13 +16,13 @@ public class IntegrationService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public Boolean checkUserExisingById(UUID userId) {
+    public Boolean isUserExist(UUID userId) {
         return userRepository.existsById(userId);
     }
 
     public UserDto getUserById(UUID userId) {
         return userRepository.findById(userId)
                 .map(userMapper::map)
-                .orElse(null);
+                .orElseThrow(() -> new CustomException(ExceptionType.BAD_REQUEST, "User not found"));
     }
 }
