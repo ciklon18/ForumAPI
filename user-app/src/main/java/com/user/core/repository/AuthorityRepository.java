@@ -12,9 +12,9 @@ import java.util.UUID;
 @Repository
 public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 
-    @Query("SELECT ua FROM Authority ua WHERE ua.user.id = :userId")
+    @Query("SELECT ua FROM Authority ua WHERE ua.userId = :userId")
     List<Authority> findAllByUserId(UUID userId);
 
-    @Query("DELETE FROM Authority ua WHERE ua.user.id = :userId AND ua.role = 'ADMIN'")
+    @Query("DELETE FROM Authority ua WHERE ua.userId = :userId AND ua.role = 'ADMIN'")
     void deleteAllByUserId(UUID userId);
 }

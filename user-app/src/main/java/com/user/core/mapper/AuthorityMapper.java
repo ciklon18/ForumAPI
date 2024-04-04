@@ -13,6 +13,6 @@ public interface AuthorityMapper {
     AuthorityMapper INSTANCE = Mappers.getMapper(AuthorityMapper.class);
 
     @Mapping(target = "role", source = "role")
-    @Mapping(target = "user", source = "user")
+    @Mapping(target = "userId", source = "userId")
     Authority map(UUID userId, String role);
 }
