@@ -29,7 +29,7 @@ public class TopicService {
     private final TopicMapper topicMapper;
     private final UserClient userClient;
     public UUID createTopic(TopicCreateDto topicCreateDto, UUID authorId) {
-        if (!userClient.checkUserExisingById(authorId)){
+        if (!userClient.isUserExist(authorId)){
             throw new CustomException(ExceptionType.BAD_REQUEST, "User not found");
         }
         Category category = categoryRepository.getCategoryIfLastLevel(topicCreateDto.categoryId())

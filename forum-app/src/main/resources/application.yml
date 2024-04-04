@@ -3,12 +3,12 @@ server:
 
 spring:
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/messenger}
+    url: ${FORUM_DATABASE_URL:jdbc:postgresql://localhost:5432/forum_db}
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:123}
     driver-class-name: org.postgresql.Driver
   flyway:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/messenger}
+    url: ${FORUM_DATABASE_URL:jdbc:postgresql://localhost:5432/forum_db}
     user: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:123}
     baseline-on-migrate: true
