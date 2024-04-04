@@ -1,5 +1,3 @@
---liquibase formatted sql
-
 CREATE TABLE Category (
                           id UUID NOT NULL,
                           name VARCHAR(255),

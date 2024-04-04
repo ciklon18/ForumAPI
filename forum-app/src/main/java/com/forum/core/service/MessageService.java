@@ -32,7 +32,7 @@ public class MessageService {
     private final UserClient userClient;
 
     public void createMessage(MessageCreateDto messageCreateDto, UUID authorId) {
-        if (!userClient.checkUserExisingById(authorId)){
+        if (!userClient.isUserExist(authorId)){
             throw new CustomException(ExceptionType.BAD_REQUEST, "User not found");
         }
         Topic topic = topicRepository.findById(messageCreateDto.topicId())

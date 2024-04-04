@@ -25,7 +25,7 @@ public class CategoryService {
 
     public UUID createCategory(CategoryCreateDto categoryCreateDto, UUID authorId)  {
         isCategoryNameOriginal(categoryCreateDto.name());
-        if (!userClient.checkUserExisingById(authorId)){
+        if (!userClient.isUserExist(authorId)){
             throw new CustomException(ExceptionType.BAD_REQUEST, "User not found");
         }
         Category category = categoryMapper.map(categoryCreateDto, authorId);
