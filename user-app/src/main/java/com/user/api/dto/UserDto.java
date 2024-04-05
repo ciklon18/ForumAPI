@@ -1,12 +1,20 @@
 package com.user.api.dto;
 
+import lombok.Builder;
+
 import java.util.UUID;
 
 
-public class UserDto {
-    private UUID id;
-    private String name;
-    private String email;
+@Builder
+public record UserDto(
+    UUID id,
+    String name,
+    String email,
+    String login,
+    String createdAt,
+    String updatedAt,
+    String deletedAt,
+    String blockedAt
+) {
 
-    private String login;
 }
