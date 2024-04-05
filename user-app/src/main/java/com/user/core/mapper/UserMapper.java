@@ -28,6 +28,8 @@ public interface UserMapper {
             NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "surname", source = "updateUserDto.surname", nullValuePropertyMappingStrategy =
             NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "phone", source = "updateUserDto.phone", nullValuePropertyMappingStrategy =
+            NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     User map(@MappingTarget User user, UpdateUserDto updateUserDto, String encode);
 }

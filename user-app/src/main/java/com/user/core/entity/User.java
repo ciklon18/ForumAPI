@@ -35,6 +35,9 @@ public class User {
     @Column(length = 100, nullable = false)
     private String surname;
 
+    @Column(length = 100, nullable = false)
+    private String phone;
+
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 

@@ -5,6 +5,7 @@ create table users (
     password varchar(100) not null,
     name varchar(100) not null,
     surname varchar(100) not null,
+    phone varchar(12),
     created_at timestamp not null default now(),
     updated_at timestamp not null default now(),
     deleted_at timestamp,

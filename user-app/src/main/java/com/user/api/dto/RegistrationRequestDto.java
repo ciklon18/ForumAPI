@@ -16,6 +16,8 @@ public record RegistrationRequestDto(
         @Size(min = 3, max = 30, message = DefaultMessages.LOGIN_INVALID)
         String login,
         String name,
-        String surname
+        String surname,
+        @Pattern(regexp = RegularExpressions.PHONE, message = DefaultMessages.PHONE_INVALID)
+        String phone
 ) {
 }

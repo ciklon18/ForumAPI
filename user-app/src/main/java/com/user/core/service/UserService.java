@@ -95,11 +95,16 @@ public class UserService {
     }
 
     private User getUserIfPasswordCorrect(String login, String requestPassword) {
-        User user = userRepository.findByLogin(login);
-        if (!passwordEncoder.matches(requestPassword, user.getPassword())) {
-            throw new CustomException(ExceptionType.UNAUTHORIZED, "Password is incorrect");
+        List<User> users = userRepository.findUsersAmongLoginAndEmailByLogin(login)
+                .stream()
+                .filter(u -> passwordEncoder.matches(requestPassword, u.getPassword()))
+                .toList();
+        if (users.isEmpty()) {
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "Invalid credentials");
+        } else if (users.size() > 1) {
+            throw new CustomException(ExceptionType.FATAL, "Database inconsistency");
         }
-        return user;
+        return users.get(0);
     }
 
     private void isLoginExist(String login) {
