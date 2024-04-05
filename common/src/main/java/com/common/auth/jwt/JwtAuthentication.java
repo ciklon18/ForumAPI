@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class JwtAuthentication implements Authentication {
     private boolean authenticated;
     private UUID id;
-    private Set<Role> roles;
+    private List<Role> roles;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
@@ -34,7 +34,7 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        return null;
+        return id;
     }
 
     @Override
