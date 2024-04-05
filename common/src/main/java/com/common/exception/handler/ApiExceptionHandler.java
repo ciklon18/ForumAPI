@@ -38,13 +38,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({AuthenticationException.class})
     public ResponseEntity<ApiError> handle(AuthenticationException e) {
         log.error("AuthenticationCredentialsNotFoundException occurred: {}", e.getMessage());
-        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, "Invalid credentials");
-        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+        ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, "Invalid credentials");
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({JwtException.class})
     public ResponseEntity<ApiError> handle(JwtException e) {
-        log.error("AuthenticationCredentialsNotFoundException occurred: {}", e.getMessage());
+        log.error("JwtException occurred: {}", e.getMessage());
         ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, "Invalid token");
         return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
     }
