@@ -12,6 +12,8 @@ import com.user.core.repository.UserRepository;
 import com.user.integration.client.forum.ForumClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -30,37 +32,67 @@ public class AuthorityService {
     private final AuthorityMapper authorityMapper;
     private final ModeratorMapper moderatorMapper;
 
-    public void assignRole(RoleAssignDto roleAssignDto) {
-        if (!userRepository.existsById(roleAssignDto.userId())) {
+    public void assignRole(UUID userId, RoleAssignDto roleAssignDto) {
+        if (isCurrentUser(userId)) {
+            throw new CustomException(ExceptionType.BAD_REQUEST, "You can't change your own role");
+        }
+        if (!userRepository.existsById(userId)) {
             throw new CustomException(ExceptionType.BAD_REQUEST, "User not found");
         }
+        if (authorityRepository.existsByUserIdAndRole(userId)) {
+            throw new CustomException(ExceptionType.BAD_REQUEST, "User is already an ADMIN");
+        }
 
-        if (roleAssignDto.categoryId() != null) {
-            if (!forumClient.isCategoryExist(roleAssignDto.categoryId())) {
-                throw new CustomException(ExceptionType.BAD_REQUEST, "Category not found");
+        switch (roleAssignDto.role()) {
+            case ADMIN -> {
+                authorityRepository.save(authorityMapper.map(
+                        userId,
+                        roleAssignDto.role().getValue()
+                ));
+                moderatorRepository.deleteAllByUserId(userId);
             }
-            moderatorRepository.save(moderatorMapper.map(
-                    roleAssignDto.userId(),
-                    roleAssignDto.categoryId()
-            ));
-        } else {
-            authorityRepository.save(authorityMapper.map(
-                    roleAssignDto.userId(),
-                    roleAssignDto.role()
-            ));
+            case MODERATOR -> {
+                if (roleAssignDto.categoryId() == null) {
+                    throw new CustomException(ExceptionType.BAD_REQUEST, "Use category id to assign MODERATOR role");
+                }
+                if (!forumClient.isCategoryExist(roleAssignDto.categoryId())) {
+                    throw new CustomException(ExceptionType.BAD_REQUEST, "Category not found");
+                }
+                if (moderatorRepository.existsByUserId(userId)) {
+                    throw new CustomException(ExceptionType.BAD_REQUEST, "User is already a MODERATOR");
+                }
+                moderatorRepository.save(moderatorMapper.map(
+                        userId,
+                        roleAssignDto.categoryId()
+                ));
+            }
+            default -> throw new CustomException(ExceptionType.BAD_REQUEST, "User is already an USER");
         }
     }
 
     public void removeRole(UUID userId) {
+        if (isCurrentUser(userId)) {
+            throw new CustomException(ExceptionType.BAD_REQUEST, "You can't change your own role");
+        }
         authorityRepository.deleteAllByUserId(userId);
         moderatorRepository.deleteAllByUserId(userId);
     }
 
-    public void setNewUserAuthorities(UUID userId, String role) {
-        authorityRepository.save(authorityMapper.map(userId, role));
+    public boolean isCurrentUser(UUID userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UUID currentUserId) {
+            return currentUserId.equals(userId);
+        }
+        return false;
     }
 
-    public String getUserAuthorities(UUID id) {
+
+    public void setNewUserAuthorities(UUID userId, String role) {
+        Authority authority = authorityMapper.map(userId, role);
+        authorityRepository.save(authority);
+    }
+
+    public List<String> getUserRoles(UUID id) {
         List<String> roles = authorityRepository
                 .findAllByUserId(id)
                 .stream()
@@ -70,7 +102,7 @@ public class AuthorityService {
         if (roles.isEmpty()) {
             throw new CustomException(ExceptionType.BAD_REQUEST, "User's role not found");
         } else {
-            return roles.get(0);
+            return roles;
         }
     }
 }

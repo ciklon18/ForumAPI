@@ -17,4 +17,12 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 
     @Query("DELETE FROM Authority ua WHERE ua.userId = :userId AND ua.role = 'ADMIN'")
     void deleteAllByUserId(UUID userId);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(ua) > 0
+            THEN TRUE ELSE FALSE END
+            FROM Authority ua
+            WHERE ua.userId = :userId AND ua.role = 'ADMIN'
+            """)
+    boolean existsByUserIdAndRole(UUID userId);
 }
