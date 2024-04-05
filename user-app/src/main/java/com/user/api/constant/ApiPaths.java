@@ -15,7 +15,15 @@ public class ApiPaths {
 
     public static final String ACCESS = "/api/user/access";
 
-    public static final String ASSIGN_ROLE = "/api/user/authority/assign";
+    public static final String ASSIGN_ROLE = "/api/admin/authority/user/{id}/assign";
 
-    public static final String REMOVE_ROLE = "/api/user/authority/remove";
+    public static final String REMOVE_ROLE = "/api/admin/authority/user/{id}/remove";
+
+    public static final String CREATE_USER = "/api/admin/user/create";
+
+    public static final String UPDATE_USER = "/api/admin/user/{id}/update";
+
+    public static final String DELETE_USER = "/api/admin/user/{id}/delete";
+
+    public static final String BLOCK_USER = "/api/admin/user/{id}/block";
 }

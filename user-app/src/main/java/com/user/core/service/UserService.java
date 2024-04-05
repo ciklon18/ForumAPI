@@ -5,10 +5,7 @@ import com.common.auth.jwt.Role;
 import com.common.auth.util.JwtUtils;
 import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
-import com.user.api.dto.JwtAuthorityDto;
-import com.user.api.dto.LoginRequestDto;
-import com.user.api.dto.LogoutRequestDto;
-import com.user.api.dto.RegistrationRequestDto;
+import com.user.api.dto.*;
 import com.user.core.entity.User;
 import com.user.core.mapper.UserMapper;
 import com.user.core.repository.UserRepository;
@@ -16,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,23 +30,29 @@ public class UserService {
 
     public JwtAuthorityDto register(RegistrationRequestDto registrationRequestDto) {
         isLoginAlreadyUsed(registrationRequestDto.login());
-        User user = userMapper.map(registrationRequestDto, UUID.randomUUID(),
-                                   passwordEncoder.encode(registrationRequestDto.password()));
-        String accessToken =
-                jwtUtils.generateAccessToken(user.getLogin(), user.getId(), Role.BASE_ROLE.getAuthority());
-        String refreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), user.getId());
-        jwtUtils.saveToken(user.getId().toString(), refreshToken);
+        User user = userMapper.map(registrationRequestDto, passwordEncoder.encode(registrationRequestDto.password()));
         userRepository.save(user);
-        setNewUserAuthorities(user.getId());
-        return new JwtAuthorityDto(user.getId(), accessToken, refreshToken);
+        User savedUser = userRepository.findByLogin(user.getLogin());
+        String accessToken = jwtUtils.generateAccessToken(user.getLogin(),
+                                                          savedUser.getId(),
+                                                          List.of(Role.BASE_ROLE.getAuthority())
+        );
+        String refreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), savedUser.getId());
+        jwtUtils.saveToken(savedUser.getId().toString(), refreshToken);
+        setNewUserAuthorities(savedUser.getId());
+        return new JwtAuthorityDto(savedUser.getId(), accessToken, refreshToken);
     }
 
     public JwtAuthorityDto login(LoginRequestDto loginRequestDto) {
         isLoginExist(loginRequestDto.login());
         User user = getUserIfPasswordCorrect(loginRequestDto.login(), loginRequestDto.password());
-        String role = authorityService.getUserAuthorities(user.getId());
-        String accessToken =
-                jwtUtils.generateAccessToken(user.getLogin(), user.getId(), role);
+        if (user.getDeletedAt() != null) {
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "User is deleted");
+        } else if (user.getBlockedAt() != null) {
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "User is blocked");
+        }
+        List<String> roles = authorityService.getUserRoles(user.getId());
+        String accessToken = jwtUtils.generateAccessToken(user.getLogin(), user.getId(), roles);
         String refreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), user.getId());
         jwtUtils.saveToken(user.getId().toString(), refreshToken);
         return new JwtAuthorityDto(user.getId(), accessToken, refreshToken);
@@ -57,26 +62,32 @@ public class UserService {
         jwtUtils.deleteToken(logoutRequestDto.userId().toString());
     }
 
-    public String getAccessToken(String refreshToken) {
-        if (!jwtUtils.checkToken(refreshToken)) {
-            throw new CustomException(ExceptionType.UNAUTHORIZED, "Refresh token is invalid");
-        }
-        String login = jwtUtils.getSubject(refreshToken);
-        User user = userRepository.findByLogin(login);
-        String role = authorityService.getUserAuthorities(user.getId());
-        return jwtUtils.generateAccessToken(user.getLogin(), user.getId(), role);
+    public TokenDto getAccessToken(String refreshToken) {
+        checkRefreshToken(refreshToken);
+        String login = jwtUtils.getLogin(refreshToken);
+        String userId = jwtUtils.getSubject(refreshToken);
+        List<String> roles = authorityService.getUserRoles(UUID.fromString(userId));
+        return new TokenDto(jwtUtils.generateAccessToken(login, UUID.fromString(userId), roles), null);
     }
 
-    public String refresh(String refreshToken) {
-        if (!jwtUtils.checkToken(refreshToken)) {
+    public TokenDto refresh(String refreshToken) {
+        checkRefreshToken(refreshToken);
+        String login = jwtUtils.getLogin(refreshToken);
+        String userId = jwtUtils.getSubject(refreshToken);
+        jwtUtils.deleteToken(UUID.fromString(userId).toString());
+        String newRefreshToken = jwtUtils.getOrGenerateRefreshToken(login, UUID.fromString(userId));
+        jwtUtils.saveToken(userId, newRefreshToken);
+        return new TokenDto(null, newRefreshToken);
+    }
+
+    private void checkRefreshToken(String refreshToken) {
+        if (!jwtUtils.validateToken(refreshToken)) {
             throw new CustomException(ExceptionType.UNAUTHORIZED, "Refresh token is invalid");
         }
-        String login = jwtUtils.getSubject(refreshToken);
-        User user = userRepository.findByLogin(login);
-        jwtUtils.deleteToken(user.getId().toString());
-        String newRefreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), user.getId());
-        jwtUtils.saveToken(user.getId().toString(), newRefreshToken);
-        return newRefreshToken;
+        String redisRefreshToken = jwtUtils.getToken(jwtUtils.getSubject(refreshToken));
+        if (!refreshToken.equals(redisRefreshToken)) {
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "Refresh token is invalid");
+        }
     }
 
     private void setNewUserAuthorities(UUID userId) {
@@ -103,15 +114,36 @@ public class UserService {
         }
     }
 
-//    public void createUser(RegistrationRequestDto registrationRequestDto) {
-//    }
-//
-//    public void updateUser(UpdateUserRequestDto updateUserRequestDto) {
-//    }
-//
-//    public void deleteUser(String userId) {
-//    }
-//
-//    public void blockUser(String userId) {
-//    }
+    public UserDto createUser(RegistrationRequestDto registrationRequestDto) {
+        isLoginAlreadyUsed(registrationRequestDto.login());
+        User user = userMapper.map(registrationRequestDto, passwordEncoder.encode(registrationRequestDto.password()));
+        userRepository.save(user);
+        User savedUser = userRepository.findByLogin(user.getLogin());
+        setNewUserAuthorities(savedUser.getId());
+        return userMapper.map(savedUser);
+    }
+
+    public void updateUser(UUID userId, UpdateUserDto updateUserDto) {
+        if (updateUserDto.login() != null) {
+            isLoginAlreadyUsed(updateUserDto.login());
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "User is not found"));
+        User updatedUser = userMapper.map(user, updateUserDto, passwordEncoder.encode(updateUserDto.password()));
+        userRepository.save(updatedUser);
+    }
+
+    public void deleteUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "User is not found"));
+        user.setDeletedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    public void blockUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "User is not found"));
+        user.setBlockedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
 }
