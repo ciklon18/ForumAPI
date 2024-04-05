@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -72,10 +72,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     .authenticated(false)
                     .build();
         }
-        Set<Role> roles = jwtUtils.extractAuthorities(token)
+        List<Role> roles = jwtUtils.extractRoles(token)
                 .stream()
                 .map(Role::valueOf)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
+
         return JwtAuthentication.builder()
                 .authenticated(true)
                 .id(UUID.fromString(jwtUtils.getSubject(token)))

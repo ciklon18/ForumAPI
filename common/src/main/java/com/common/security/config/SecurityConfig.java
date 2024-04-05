@@ -30,6 +30,7 @@ import static com.common.security.constant.SecurityConstants.AUTH_WHITELIST;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private static final String ADMIN = "ADMIN";
     @Bean
     @SneakyThrows
     public SecurityFilterChain securityFilterChain(
@@ -49,6 +50,12 @@ public class SecurityConfig {
                                         request.requestMatchers(AUTH_WHITELIST).permitAll()
                                                 .requestMatchers(HttpMethod.POST, ApiPaths.REGISTER).permitAll()
                                                 .requestMatchers(HttpMethod.POST, ApiPaths.LOGIN).permitAll()
+                                                .requestMatchers(ApiPaths.ASSIGN_ROLE).hasAuthority(ADMIN)
+                                                .requestMatchers(ApiPaths.REMOVE_ROLE).hasAuthority(ADMIN)
+                                                .requestMatchers(ApiPaths.CREATE_USER).hasAuthority(ADMIN)
+                                                .requestMatchers(ApiPaths.UPDATE_USER).hasAuthority(ADMIN)
+                                                .requestMatchers(ApiPaths.DELETE_USER).hasAuthority(ADMIN)
+                                                .requestMatchers(ApiPaths.BLOCK_USER).hasAuthority(ADMIN)
                                                 .anyRequest().authenticated()
                 )
                 .anonymous(AbstractHttpConfigurer::disable)

@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -39,8 +39,8 @@ public class JwtUtils {
         return tokenRepository.getToken(key);
     }
 
-    public String generateAccessToken(String login, UUID userId, String role) {
-        return jwtService.generateAccessToken(userId.toString(), login, role);
+    public String generateAccessToken(String login, UUID userId, List<String> roles) {
+        return jwtService.generateAccessToken(userId.toString(), login, roles);
     }
 
     public String getOrGenerateRefreshToken(String login, UUID userId) {
@@ -55,8 +55,8 @@ public class JwtUtils {
         return jwtService.extractAllClaims(token);
     }
 
-    public Collection<String> extractAuthorities(String token) {
-        return jwtService.extractAuthorities(token);
+    public List<String> extractRoles(String token) {
+        return jwtService.extractRoles(token);
     }
 
     public String getSubject(String token) {
