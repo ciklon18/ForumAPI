@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,5 +25,10 @@ public class IntegrationController {
     @GetMapping(IntegrationPaths.USER_BY_ID)
     public UserDto getUserById(@PathVariable("id") UUID userId) {
         return integrationService.getUserById(userId);
+    }
+
+    @GetMapping(IntegrationPaths.MODERATOR_CATEGORY_BY_USER_ID)
+    public List<UUID> getModeratorCategoriesByUserId(@PathVariable("userId") UUID userId) {
+        return integrationService.getModeratorCategoriesByUserId(userId);
     }
 }
