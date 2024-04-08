@@ -11,4 +11,7 @@ import java.util.UUID;
 public interface UserClient {
     @GetMapping("/integration/user/check/{id}")
     Boolean isUserExist(@PathVariable UUID id);
+
+    @GetMapping("/integration/user/{userId}/message/{messageId}/is-moderator")
+    boolean isModerator(@PathVariable String userId, @PathVariable String messageId);
 }

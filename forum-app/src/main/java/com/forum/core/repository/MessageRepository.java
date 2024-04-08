@@ -3,6 +3,7 @@ package com.forum.core.repository;
 import com.forum.core.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
@@ -56,4 +57,41 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
             WHERE LOWER(m.text) LIKE CONCAT('%', LOWER(:text), '%')
             """)
     List<Message> getMessagesByQuery(String text);
+
+    @Query(nativeQuery = true, value = """
+            SELECT CASE WHEN COUNT(*) = 1 THEN TRUE ELSE FALSE END
+            FROM message m
+            WHERE m.id = :messageId AND m.author_id = :userId
+            """)
+    boolean isMessageBelongToUser(UUID messageId, UUID userId);
+
+    @Query(nativeQuery = true, value = """
+            SELECT c.id
+            FROM message m
+            JOIN public.topic t on t.id = m.topic_id
+            JOIN public.category c on c.id = t.category_id
+            WHERE m.id = :messageId
+            """)
+    UUID getMessageCategoryId(UUID messageId);
+
+    @Query(nativeQuery = true, value = """
+            WITH RECURSIVE CategoryPath AS (
+                SELECT id, parent_id
+                FROM category c
+                WHERE id = :messageCategoryId
+                UNION ALL
+                SELECT c1.id, c1.parent_id
+                FROM category c1
+                JOIN CategoryPath cp ON c1.id = cp.parent_id
+            )
+            SELECT EXISTS (
+                SELECT 1
+                FROM CategoryPath cp
+                WHERE cp.id IN (:moderatorCategoryIds) AND (:moderatorCategoryIds IS NOT NULL)
+            )
+            """)
+    boolean isModerator(
+            @Param("messageCategoryId") UUID messageCategoryId,
+            @Param("moderatorCategoryIds") List<UUID> moderatorCategoryIds
+    );
 }

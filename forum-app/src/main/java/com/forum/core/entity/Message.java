@@ -22,10 +22,6 @@ public class Message {
     private Topic topic;
 
     private String text;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "author_id")
-//    private User authorId;
 
     private UUID authorId;
 
