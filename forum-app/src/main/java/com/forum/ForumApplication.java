@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableFeignClients
 @EnableSpringSecurity
 @EnableApiExceptionHandler
-@SpringBootApplication(scanBasePackages={"com.forum"})
+@SpringBootApplication
 public class ForumApplication {
     public static void main(String[] args) {
         SpringApplication.run(ForumApplication.class, args);
