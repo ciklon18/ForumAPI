@@ -3,13 +3,15 @@ package com.file.api.dto;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FileDataDto {
-    private String id;
+    private UUID id;
     private String fileName;
     private String contentType;
     private long size;
