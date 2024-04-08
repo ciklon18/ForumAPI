@@ -2,11 +2,14 @@ package com.file.core.service;
 
 
 import com.file.api.dto.FileDataDto;
+import org.springframework.http.ResponseEntity;
+
+import java.util.UUID;
 
 public interface IFileService {
-    FileDataDto uploadFile(byte[] file, String fileName);
+    FileDataDto uploadFile(byte[] file, String fileName, UUID messageId);
 
-    byte[] downloadFile(String id);
+    ResponseEntity<byte[]> downloadFile(UUID id);
 
-    FileDataDto getFileInfoById(String id);
+    void deleteFileFromMessage(UUID id);
 }

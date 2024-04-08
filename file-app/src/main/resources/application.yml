@@ -1,8 +1,8 @@
 minio:
-  access-key: 46EKLZkR1FehlOExHCAx
-  secret-key: XGYGusj5k236B2PUZk4DlybTkzBSdpviNFMTY9Qz
-  bucket: ${MINIO_BUCKET:file-service}
-  url: ${MINIO_URL:http://localhost:9000}
+  access-key: aQaaURDISncmIbsZg78u
+  secret-key: FcbTlsMFScgpccVRtycDdfkT5R0lJsTM9CqGXCWj
+  bucket: ${MINIO_BUCKET:file-bucket}
+  url: ${MINIO_URL:http://localhost:9901}
 
 server:
   port: ${FILE_APP_PORT:9446}
@@ -12,5 +12,26 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  datasource:
+    url: ${FILE_DATABASE_URL:jdbc:postgresql://localhost:5432/file_db}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:123}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    url: ${FILE_DATABASE_URL:jdbc:postgresql://localhost:5432/file_db}
+    user: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:123}
+    baseline-on-migrate: true
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}
+    show-sql: true
+  mvc:
+    log-request-details: true
 
 
+logging:
+  level:
+    org:
+      springframework:
+        security: ${LOGGING_LEVEL_SPRING_SECURITY:TRACE}

@@ -11,25 +11,33 @@ import java.util.UUID;
 
 @Builder
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@AllArgsConstructor
 @Table(name = "file")
 public class File {
     @Id
     private UUID id;
     private String name;
     private long size;
+    private UUID messageId;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
-
+    public File(String name, long size, UUID messageId) {
+        this.id = UUID.randomUUID();
+        this.name = name;
+        this.size = size;
+        this.messageId = messageId;
+    }
 
     @PrePersist
     protected void onCreate() {
-        this.id = UUID.randomUUID();
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -37,10 +45,5 @@ public class File {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreRemove
-    protected void onDelete() {
-        this.deletedAt = LocalDateTime.now();
     }
 }
