@@ -20,15 +20,17 @@ public class File {
     private UUID id;
     private String name;
     private long size;
+    private UUID messageId;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
-    public File(String name, long size) {
+    public File(String name, long size, UUID messageId) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.size = size;
+        this.messageId = messageId;
     }
 
     @PrePersist

@@ -3,9 +3,8 @@ package com.file.api.controller;
 
 import com.file.api.constant.ApiPaths;
 import com.file.api.dto.FileDataDto;
-import com.file.core.service.MinioFileService;
+import com.file.core.service.IFileService;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +19,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileController {
 
-    private final MinioFileService fileService;
+    private final IFileService fileService;
 
     @PostMapping(ApiPaths.UPLOAD_TO_MESSAGE_BY_ID)
-    public FileDataDto uploadFile(
+    public FileDataDto uploadFileToMessage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("fileName") String fileName,
             @PathVariable("id") UUID messageId
@@ -34,16 +33,13 @@ public class FileController {
 
     @GetMapping(value = ApiPaths.DOWNLOAD, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<byte[]> downloadFile(@PathVariable UUID id) {
-        var data = fileService.getFileInfoById(id);
-        var file = fileService.downloadFile(id);
-        return ResponseEntity.ok()
-                .header("Content-Disposition", "filename=" + data.getFileName())
-                .body(file);
+        log.info("Скачивание файла с id: {}", id);
+        return fileService.downloadFile(id);
     }
 
-    @SneakyThrows
-    @DeleteMapping(ApiPaths.DELETE_BY_ID)
-    public void deleteFile(@PathVariable UUID id) {
-        fileService.deleteFile(id);
+    @DeleteMapping(ApiPaths.DELETE_BY_MESSAGE_ID)
+    public void deleteFile(@PathVariable("id") UUID messageId) {
+        log.info("Удаление файла с id: {}", messageId);
+        fileService.deleteFileFromMessage(messageId);
     }
 }
