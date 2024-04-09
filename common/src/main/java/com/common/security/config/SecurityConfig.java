@@ -68,4 +68,10 @@ public class SecurityConfig {
     public AuthenticationEntryPoint authenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         return (request, response, ex) -> resolver.resolveException(request, response, null, ex);
     }
+
+    @Bean
+    public JwtTokenFilter jwtTokenFilter(JwtUtils jwtUtils) {
+        return new JwtTokenFilter(jwtUtils);
+    }
+
 }

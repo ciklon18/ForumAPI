@@ -1,25 +1,20 @@
 package com.common.auth.jwt;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
-@Builder
-public class JwtAuthentication implements Authentication {
-    private boolean authenticated;
-    private UUID id;
-    private List<Role> roles;
+public class JwtAuthentication extends AbstractAuthenticationToken {
+    public JwtAuthentication(UUID id, List<Role> roles, boolean authenticated) {
+        super(roles);
+        this.setAuthenticated(authenticated);
+        this.setDetails(id);
+    }
 
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+    public JwtAuthentication(boolean authenticated) {
+        super(null);
+        this.setAuthenticated(authenticated);
     }
 
     @Override
@@ -28,27 +23,7 @@ public class JwtAuthentication implements Authentication {
     }
 
     @Override
-    public Object getDetails() {
-        return null;
-    }
-
-    @Override
     public Object getPrincipal() {
-        return id;
-    }
-
-    @Override
-    public boolean isAuthenticated() {
-        return authenticated;
-    }
-
-    @Override
-    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-        this.authenticated = isAuthenticated;
-    }
-
-    @Override
-    public String getName() {
-        return null;
+        return getDetails();
     }
 }
