@@ -1,8 +1,11 @@
 package com.common.security.config;
 
-import com.common.auth.annotation.EnableJwtTokenFilter;
 import com.common.auth.jwt.JwtTokenFilter;
+import com.common.auth.util.JwtUtils;
+import com.common.integration.IntegrationFilter;
+import com.common.integration.props.ApiKeyProps;
 import com.common.security.constant.ApiPaths;
+import com.common.security.constant.IntegrationPaths;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,19 +28,19 @@ import static com.common.security.constant.SecurityConstants.AUTH_WHITELIST;
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
-@EnableJwtTokenFilter
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String ADMIN = "ADMIN";
+
     @Bean
     @SneakyThrows
-    public SecurityFilterChain securityFilterChain(
+    public SecurityFilterChain securityFilterChainJwt(
             HttpSecurity http,
             JwtTokenFilter jwtTokenFilter,
             AuthenticationEntryPoint authenticationEntryPoint
-            ) {
+    ) {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
@@ -63,7 +66,26 @@ public class SecurityConfig {
                 .build();
     }
 
-
+    @Bean
+    @SneakyThrows
+    public SecurityFilterChain securityFilterChainIntegration(
+            HttpSecurity http, IntegrationFilter integrationFilter
+    ) {
+        return http.csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(IntegrationPaths.CATEGORY_BY_ID).permitAll()
+                        .requestMatchers(IntegrationPaths.CHECK_USER_BY_ID).permitAll()
+                        .requestMatchers(IntegrationPaths.IS_MODERATOR_BY_MESSAGE_ID).permitAll()
+                        .requestMatchers(IntegrationPaths.MESSAGE_BY_ID_USER_ID).permitAll()
+                        .requestMatchers(IntegrationPaths.MODERATOR_CATEGORY_BY_USER_ID).permitAll()
+                        .requestMatchers(IntegrationPaths.USER_BY_ID).permitAll()
+                        .anyRequest().authenticated())
+                .anonymous(AbstractHttpConfigurer::disable)
+                .addFilterBefore(integrationFilter, AuthorizationFilter.class)
+                .build();
+    }
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
         return (request, response, ex) -> resolver.resolveException(request, response, null, ex);
@@ -74,4 +96,13 @@ public class SecurityConfig {
         return new JwtTokenFilter(jwtUtils);
     }
 
+    @Bean
+    public IntegrationFilter integrationFilter(ApiKeyProps apiKeyProps) {
+        return new IntegrationFilter(apiKeyProps);
+    }
+
+    @Bean
+    public ApiKeyProps apiKeyProps() {
+        return new ApiKeyProps();
+    }
 }
