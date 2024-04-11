@@ -4,5 +4,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class IntegrationConstants {
-    public static final String HEADER_API_KEY = "API-KEY";
+    public static final String HEADER_API_KEY = "x-api-key";
 }

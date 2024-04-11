@@ -28,5 +28,5 @@ logging:
       springframework:
         security: ${LOGGING_LEVEL_SPRING_SECURITY:TRACE}
 
-api-key:
-   value: ${API_KEY:123}
+integration:
+   integration-key: ${INTEGRATION_KEY:123}
