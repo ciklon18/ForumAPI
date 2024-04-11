@@ -9,25 +9,40 @@ import com.user.api.dto.*;
 import com.user.core.entity.User;
 import com.user.core.mapper.UserMapper;
 import com.user.core.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @EnableJwtUtils
-public class UserService {
+public class UserService extends BaseUserService {
+
     private final UserRepository userRepository;
     private final AuthorityService authorityService;
     private final UserMapper userMapper;
-
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
+    public UserService(
+            UserRepository userRepository,
+            AuthorityService authorityService,
+            UserMapper userMapper,
+            BCryptPasswordEncoder passwordEncoder,
+            JwtUtils jwtUtils
+    ) {
+        super(userRepository, authorityService);
+        this.userRepository = userRepository;
+        this.authorityService = authorityService;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtils = jwtUtils;
+
+    }
+
+    @Transactional
     public JwtAuthorityDto register(RegistrationRequestDto registrationRequestDto) {
         isLoginAlreadyUsed(registrationRequestDto.login());
         User user = userMapper.map(registrationRequestDto, passwordEncoder.encode(registrationRequestDto.password()));
@@ -43,6 +58,7 @@ public class UserService {
         return new JwtAuthorityDto(savedUser.getId(), accessToken, refreshToken);
     }
 
+    @Transactional
     public JwtAuthorityDto login(LoginRequestDto loginRequestDto) {
         isLoginExist(loginRequestDto.login());
         User user = getUserIfPasswordCorrect(loginRequestDto.login(), loginRequestDto.password());
@@ -58,6 +74,7 @@ public class UserService {
         return new JwtAuthorityDto(user.getId(), accessToken, refreshToken);
     }
 
+    @Transactional
     public void logout(LogoutRequestDto logoutRequestDto) {
         jwtUtils.deleteToken(logoutRequestDto.userId().toString());
     }
@@ -70,6 +87,7 @@ public class UserService {
         return new TokenDto(jwtUtils.generateAccessToken(login, UUID.fromString(userId), roles), null);
     }
 
+    @Transactional
     public TokenDto refresh(String refreshToken) {
         checkRefreshToken(refreshToken);
         String login = jwtUtils.getLogin(refreshToken);
@@ -90,10 +108,6 @@ public class UserService {
         }
     }
 
-    private void setNewUserAuthorities(UUID userId) {
-        authorityService.setNewUserAuthorities(userId, Role.BASE_ROLE.getAuthority());
-    }
-
     private User getUserIfPasswordCorrect(String login, String requestPassword) {
         List<User> users = userRepository.findUsersAmongLoginAndEmailByLogin(login)
                 .stream()
@@ -111,44 +125,5 @@ public class UserService {
         if (!userRepository.isProfileExistByLogin(login)) {
             throw new CustomException(ExceptionType.NOT_FOUND, "Login is not found");
         }
-    }
-
-    private void isLoginAlreadyUsed(String login) {
-        if (userRepository.isProfileExistByLogin(login)) {
-            throw new CustomException(ExceptionType.ALREADY_EXISTS, "Login is already used");
-        }
-    }
-
-    public UserDto createUser(RegistrationRequestDto registrationRequestDto) {
-        isLoginAlreadyUsed(registrationRequestDto.login());
-        User user = userMapper.map(registrationRequestDto, passwordEncoder.encode(registrationRequestDto.password()));
-        userRepository.save(user);
-        User savedUser = userRepository.findByLogin(user.getLogin());
-        setNewUserAuthorities(savedUser.getId());
-        return userMapper.map(savedUser);
-    }
-
-    public void updateUser(UUID userId, UpdateUserDto updateUserDto) {
-        if (updateUserDto.login() != null) {
-            isLoginAlreadyUsed(updateUserDto.login());
-        }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "User is not found"));
-        User updatedUser = userMapper.map(user, updateUserDto, passwordEncoder.encode(updateUserDto.password()));
-        userRepository.save(updatedUser);
-    }
-
-    public void deleteUser(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "User is not found"));
-        user.setDeletedAt(LocalDateTime.now());
-        userRepository.save(user);
-    }
-
-    public void blockUser(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "User is not found"));
-        user.setBlockedAt(LocalDateTime.now());
-        userRepository.save(user);
     }
 }

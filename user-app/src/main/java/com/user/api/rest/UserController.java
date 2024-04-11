@@ -1,13 +1,13 @@
-package com.user.api.controller;
+package com.user.api.rest;
 
 import com.user.api.constant.ApiPaths;
 import com.user.api.dto.*;
 import com.user.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -39,28 +39,5 @@ public class UserController {
     @PostMapping(ApiPaths.ACCESS)
     public TokenDto getAccessToken(@RequestBody TokenDto tokenDto) {
         return userService.getAccessToken(tokenDto.refreshToken());
-    }
-
-    @PostMapping(ApiPaths.CREATE_USER)
-    public UserDto createUser(@RequestBody RegistrationRequestDto registrationRequestDto) {
-        return userService.createUser(registrationRequestDto);
-    }
-
-    @PatchMapping(ApiPaths.UPDATE_USER)
-    public void updateUser(
-            @PathVariable("id") String userId,
-            @RequestBody UpdateUserDto updateUserDto
-    ) {
-        userService.updateUser(UUID.fromString(userId), updateUserDto);
-    }
-
-    @PatchMapping(ApiPaths.DELETE_USER)
-    public void deleteUser(@PathVariable("id") String userId) {
-        userService.deleteUser(UUID.fromString(userId));
-    }
-
-    @PatchMapping(ApiPaths.BLOCK_USER)
-    public void blockUser(@PathVariable("id") String userId) {
-        userService.blockUser(UUID.fromString(userId));
     }
 }

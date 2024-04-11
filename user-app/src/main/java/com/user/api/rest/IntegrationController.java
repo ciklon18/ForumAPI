@@ -1,4 +1,4 @@
-package com.user.api.controller;
+package com.user.api.rest;
 
 import com.user.api.constant.IntegrationPaths;
 import com.user.api.dto.UserDto;
