@@ -1,6 +1,6 @@
-package com.common.auth.annotation;
+package com.common.integration.annotation;
 
-import com.common.auth.props.JwtProperties;
+import com.common.integration.props.IntegrationKeyProps;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(JwtProperties.class)
-public @interface EnableJwtProperties {
+@Import(IntegrationKeyProps.class)
+public @interface EnableIntegrationKeyProps {
 }

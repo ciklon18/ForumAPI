@@ -27,3 +27,6 @@ logging:
     org:
       springframework:
         security: ${LOGGING_LEVEL_SPRING_SECURITY:TRACE}
+
+integration:
+   integration-key: ${INTEGRATION_KEY:123}

@@ -1,6 +1,6 @@
 package com.common.auth.service;
 
-import com.common.auth.props.JwtProperties;
+import com.common.auth.props.JwtProps;
 import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
 import io.jsonwebtoken.Claims;
@@ -24,10 +24,10 @@ import static com.common.security.constant.SecurityConstants.ROLES;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties(JwtProps.class)
 public class JwtService {
 
-    private final JwtProperties jwtProperties;
+    private final JwtProps jwtProps;
 
     public String generateAccessToken(String userId, String login, List<String> roles) {
         return Jwts.builder()
@@ -35,7 +35,7 @@ public class JwtService {
                 .claim(ROLES, roles)
                 .claim(LOGIN, login)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessExpirationTime()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProps.getAccessExpirationTime()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -45,7 +45,7 @@ public class JwtService {
                 .setSubject(userId)
                 .claim(LOGIN, login)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshExpirationTime()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProps.getRefreshExpirationTime()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -78,7 +78,7 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtProperties.getAccessSecret().getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(jwtProps.getAccessSecret().getBytes(StandardCharsets.UTF_8));
     }
 
     public String getSubject(String token) {

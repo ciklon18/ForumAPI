@@ -2,7 +2,7 @@ package com.common.auth.util;
 
 import com.common.auth.annotation.EnableJwtService;
 import com.common.auth.annotation.EnableTokenRepository;
-import com.common.auth.props.JwtProperties;
+import com.common.auth.props.JwtProps;
 import com.common.auth.repository.TokenRepository;
 import com.common.auth.service.JwtService;
 import io.jsonwebtoken.Claims;
@@ -17,14 +17,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @EnableTokenRepository
 @EnableJwtService
-@EnableConfigurationProperties(JwtProperties.class)
+@EnableConfigurationProperties(JwtProps.class)
 public class JwtUtils {
     private final TokenRepository tokenRepository;
-    private final JwtProperties jwtProperties;
+    private final JwtProps jwtProps;
     private final JwtService jwtService;
 
     public void saveToken(String key, String value) {
-        tokenRepository.save(key, value, jwtProperties.getRefreshExpirationTime());
+        tokenRepository.save(key, value, jwtProps.getRefreshExpirationTime());
     }
 
     public Boolean checkToken(String key) {
