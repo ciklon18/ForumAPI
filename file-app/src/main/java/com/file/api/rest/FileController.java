@@ -1,4 +1,4 @@
-package com.file.api.controller;
+package com.file.api.rest;
 
 
 import com.file.api.constant.ApiPaths;

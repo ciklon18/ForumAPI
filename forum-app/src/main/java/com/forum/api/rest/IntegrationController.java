@@ -1,4 +1,4 @@
-package com.forum.api.controller;
+package com.forum.api.rest;
 
 import com.forum.api.constant.IntegrationPaths;
 import com.forum.core.service.IntegrationService;

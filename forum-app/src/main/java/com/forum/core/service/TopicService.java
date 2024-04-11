@@ -14,6 +14,7 @@ import com.forum.core.repository.TopicRepository;
 import com.forum.integration.user.UserClient;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class TopicService {
+
     public static final Integer DEFAULT_PAGE_SIZE = 10;
     public static final Integer DEFAULT_PAGE_NUMBER = 1;
 
@@ -28,6 +30,8 @@ public class TopicService {
     private final CategoryRepository categoryRepository;
     private final TopicMapper topicMapper;
     private final UserClient userClient;
+
+    @Transactional
     public UUID createTopic(TopicCreateDto topicCreateDto, UUID authorId) {
         if (!userClient.isUserExist(authorId)){
             throw new CustomException(ExceptionType.BAD_REQUEST, "User not found");
@@ -40,6 +44,7 @@ public class TopicService {
         return topic.getId();
     }
 
+    @Transactional
     public void updateTopic(UUID topicId, TopicUpdateDto topicUpdateDto) {
         isTopicNameOriginal(topicUpdateDto.name());
         Topic topic = topicRepository.findById(topicId)
@@ -48,10 +53,12 @@ public class TopicService {
         topicRepository.save(updatedTopic);
     }
 
+    @Transactional
     public void deleteTopic(UUID topicId) {
         topicRepository.deleteById(topicId);
     }
 
+    @Transactional(readOnly = true)
     public TopicPaginationResponse getTopics(Integer pageNumber, Integer pageSize) {
         Integer totalPagesAmount = (int) Math.ceil((double) topicRepository.getTopicsCount() / pageSize);
         pageNumber = pageNumber <= totalPagesAmount ? pageNumber : totalPagesAmount;
@@ -63,6 +70,7 @@ public class TopicService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<TopicDto> getTopicsByQuery(String query) {
         return topicRepository.getTopicsByQuery(query).stream().map(topicMapper::map).toList();
     }

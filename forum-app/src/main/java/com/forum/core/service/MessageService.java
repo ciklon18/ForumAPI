@@ -15,6 +15,7 @@ import com.forum.integration.user.UserClient;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class MessageService {
+
     public static final Integer DEFAULT_PAGE_NUMBER = 1;
     public static final Integer DEFAULT_PAGE_SIZE = 10;
 
@@ -31,6 +33,7 @@ public class MessageService {
     private final MessageMapper messageMapper;
     private final UserClient userClient;
 
+    @Transactional
     public void createMessage(MessageCreateDto messageCreateDto, UUID authorId) {
         if (!userClient.isUserExist(authorId)){
             throw new CustomException(ExceptionType.BAD_REQUEST, "User not found");
@@ -42,6 +45,7 @@ public class MessageService {
         messageRepository.save(message);
     }
 
+    @Transactional
     public void updateMessage(UUID messageId, MessageUpdateDto messageUpdateDto) {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "Message not found"));
@@ -49,10 +53,12 @@ public class MessageService {
         messageRepository.save(updatedMessage);
     }
 
+    @Transactional
     public void deleteMessage(UUID messageId) {
         messageRepository.deleteById(messageId);
     }
 
+    @Transactional(readOnly = true)
     public MessagePaginationResponse getMessagesByTopic(UUID topicId, Integer pageNumber, Integer pageSize) {
         isTopicExist(topicId);
 
@@ -71,6 +77,7 @@ public class MessageService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<MessageDto> getMessages(
             String text,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
@@ -90,6 +97,7 @@ public class MessageService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<MessageDto> getMessagesByQuery(String text) {
         return messageRepository.getMessagesByQuery(text)
                 .stream()

@@ -14,7 +14,6 @@ import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -43,8 +43,8 @@ public class MinioFileService implements IFileService {
     private final HeadersUtils headersUtils;
 
     @SneakyThrows
-    @Transactional
     @Override
+    @Transactional
     public FileDataDto uploadFile(byte[] file, String fileName, UUID messageId) {
         checkIsUserOwnerOfMessage(messageId);
         checkIsFileAlreadyExists(messageId);
@@ -61,6 +61,7 @@ public class MinioFileService implements IFileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<byte[]> downloadFile(UUID id) {
         byte[] file = getFileById(id);
         FileDataDto data = getFileInfoById(id);
@@ -68,29 +69,6 @@ public class MinioFileService implements IFileService {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(file);
-    }
-
-    public byte[] getFileById(UUID id) {
-        GetObjectArgs args = GetObjectArgs.builder()
-                .bucket(minioConfig.getBucket())
-                .object(id.toString())
-                .build();
-        try (var in = minioClient.getObject(args)) {
-            return in.readAllBytes();
-        } catch (Exception e) {
-            throw new CustomException(ExceptionType.FATAL, "Error while downloading file from Minio with id =" + id);
-        }
-    }
-
-    public FileDataDto getFileInfoById(UUID id) {
-        File file = fileRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ExceptionType.BAD_REQUEST, "File with id=" + id + " not found"));
-        return FileDataDto.builder()
-                .id(id)
-                .fileName(file.getName())
-                .contentType(headersUtils.CONTENT_TYPE)
-                .size(file.getSize())
-                .build();
     }
 
     @SneakyThrows
@@ -109,6 +87,22 @@ public class MinioFileService implements IFileService {
                         .object(fileId.toString())
                         .build()
         );
+    }
+
+    private byte[] getFileById(UUID id) {
+        GetObjectArgs args = GetObjectArgs.builder().bucket(minioConfig.getBucket()).object(id.toString()).build();
+        try (var in = minioClient.getObject(args)) {
+            return in.readAllBytes();
+        } catch (Exception e) {
+            throw new CustomException(ExceptionType.FATAL, "Error while downloading file from Minio with id =" + id);
+        }
+    }
+
+    private FileDataDto getFileInfoById(UUID id) {
+        File file = fileRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ExceptionType.BAD_REQUEST, "File with id=" + id + " not found"));
+        return FileDataDto.builder().id(id).fileName(file.getName()).contentType(headersUtils.CONTENT_TYPE)
+                .size(file.getSize()).build();
     }
 
     private void checkIsUserOwnerOfMessage(UUID messageId) {

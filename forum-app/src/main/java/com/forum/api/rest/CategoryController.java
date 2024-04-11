@@ -1,4 +1,4 @@
-package com.forum.api.controller;
+package com.forum.api.rest;
 
 import com.forum.api.constant.ApiPaths;
 import com.forum.api.dto.CategoryCreateDto;

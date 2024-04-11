@@ -11,6 +11,7 @@ import com.forum.core.repository.CategoryRepository;
 import com.forum.integration.user.UserClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +24,7 @@ public class CategoryService {
     private final CategoryMapper categoryMapper;
     private final UserClient userClient;
 
+    @Transactional
     public UUID createCategory(CategoryCreateDto categoryCreateDto, UUID authorId)  {
         isCategoryNameOriginal(categoryCreateDto.name());
         if (!userClient.isUserExist(authorId)){
@@ -34,6 +36,7 @@ public class CategoryService {
         return category.getId();
     }
 
+    @Transactional
     public void updateCategory(UUID categoryId, CategoryUpdateDto categoryUpdateDto) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "Category not found"));
@@ -44,17 +47,27 @@ public class CategoryService {
         categoryRepository.save(updatedCategory);
     }
 
+    @Transactional
     public void deleteCategoryHierarchyById(UUID categoryId) {
         isCategoryExist(categoryId);
         List<Category> categories = categoryRepository.getCategoriesHierarchyById(categoryId);
         categoryRepository.deleteAll(categories);
     }
 
+    @Transactional(readOnly = true)
     public List<CategoryDto> getCategoryHierarchy() {
         return categoryRepository.getCategoryHierarchy()
                 .stream()
                 .sorted(Comparator.comparing(Category::getName))
                 .filter(category -> category.getParentCategory() == null)
+                .map(categoryMapper::map)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryDto> getCategoriesByQuery(String text) {
+        return categoryRepository.getCategoriesByQuery(text)
+                .stream()
                 .map(categoryMapper::map)
                 .toList();
     }
@@ -70,13 +83,6 @@ public class CategoryService {
         if (categoryRepository.findByName(name).isPresent()) {
             throw new CustomException(ExceptionType.ALREADY_EXISTS, "Category with this name already exists");
         }
-    }
-
-    public List<CategoryDto> getCategoriesByQuery(String text) {
-        return categoryRepository.getCategoriesByQuery(text)
-                .stream()
-                .map(categoryMapper::map)
-                .toList();
     }
 
     private void isCategoryExist(UUID categoryId) {
