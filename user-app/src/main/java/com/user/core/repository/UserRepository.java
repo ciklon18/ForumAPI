@@ -18,5 +18,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT u FROM User u WHERE u.login = :login OR u.email = :login")
     List<User> findUsersAmongLoginAndEmailByLogin(String login);
 
-    User findByLogin(String login);
+    @Query("""
+            SELECT CASE
+                WHEN COUNT(u) > 0
+                THEN true ELSE false
+                END
+            FROM User u
+            WHERE (u.login = :login OR :login IS NULL)
+                AND (u.email = :email OR :email IS NULL)
+            """)
+    boolean isProfileExistByLoginAndEmail(String login, String email);
 }

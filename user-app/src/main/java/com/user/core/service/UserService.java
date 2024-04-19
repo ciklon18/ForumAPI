@@ -44,10 +44,9 @@ public class UserService extends BaseUserService {
 
     @Transactional
     public JwtAuthorityDto register(RegistrationRequestDto registrationRequestDto) {
-        isLoginAlreadyUsed(registrationRequestDto.login());
+        isLoginAndEmailAlreadyUsed(registrationRequestDto.login(), registrationRequestDto.email());
         User user = userMapper.map(registrationRequestDto, passwordEncoder.encode(registrationRequestDto.password()));
-        userRepository.save(user);
-        User savedUser = userRepository.findByLogin(user.getLogin());
+        User savedUser = userRepository.save(user);
         String accessToken = jwtUtils.generateAccessToken(user.getLogin(),
                                                           savedUser.getId(),
                                                           List.of(Role.BASE_ROLE.getAuthority())

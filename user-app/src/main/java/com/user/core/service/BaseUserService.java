@@ -15,8 +15,8 @@ public class BaseUserService {
     private final UserRepository userRepository;
     private final AuthorityService authorityService;
 
-    void isLoginAlreadyUsed(String login) {
-        if (userRepository.isProfileExistByLogin(login)) {
+    void isLoginAndEmailAlreadyUsed(String login, String email) {
+        if (userRepository.isProfileExistByLoginAndEmail(login, email)) {
             throw new CustomException(ExceptionType.ALREADY_EXISTS, "Login is already used");
         }
     }

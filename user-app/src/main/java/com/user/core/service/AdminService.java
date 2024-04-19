@@ -36,18 +36,17 @@ public class AdminService extends BaseUserService {
 
     @Transactional
     public UserDto createUser(RegistrationRequestDto registrationRequestDto) {
-        isLoginAlreadyUsed(registrationRequestDto.login());
+        isLoginAndEmailAlreadyUsed(registrationRequestDto.login(), registrationRequestDto.email());
         User user = userMapper.map(registrationRequestDto, passwordEncoder.encode(registrationRequestDto.password()));
-        userRepository.save(user);
-        User savedUser = userRepository.findByLogin(user.getLogin());
+        User savedUser = userRepository.save(user);
         setNewUserAuthorities(savedUser.getId());
         return userMapper.map(savedUser);
     }
 
     @Transactional
     public void updateUser(UUID userId, UpdateUserDto updateUserDto) {
-        if (updateUserDto.login() != null) {
-            isLoginAlreadyUsed(updateUserDto.login());
+        if (updateUserDto.login() != null || updateUserDto.email() != null) {
+            isLoginAndEmailAlreadyUsed(updateUserDto.login(), updateUserDto.email());
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "User is not found"));
