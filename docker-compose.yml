@@ -34,6 +34,23 @@ services:
       - "8020:5432"
     volumes:
       - /var/docker-db-lab/:/var/lib/postgresql/data
+
+
+  rabbitmq:
+    image: rabbitmq:3.13-alpine
+    container_name: rabbitmq
+    hostname: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq123
+      RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS: true
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+
 volumes:
   minio-data:
     driver: local
