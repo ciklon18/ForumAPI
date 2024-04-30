@@ -22,6 +22,7 @@
         <module>file-app</module>
         <module>common</module>
         <module>gateway-app</module>
+        <module>notification-app</module>
     </modules>
 
     <properties>
@@ -37,6 +38,7 @@
         <feign.version>4.1.0</feign.version>
         <openfeign.version>13.2.1</openfeign.version>
         <spring-cloud.version>4.1.2</spring-cloud.version>
+        <rabbitmq.version>4.1.1</rabbitmq.version>
     </properties>
 
     <dependencyManagement>
@@ -148,12 +150,17 @@
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring-security.version}</version>
             </dependency>
-<!--            cloud gateway starter-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-gateway</artifactId>
                 <version>${spring-cloud.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+                <version>${rabbitmq.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>
