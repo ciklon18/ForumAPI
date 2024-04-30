@@ -95,6 +95,12 @@
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-okhttp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.gateway</groupId>
+            <artifactId>notification-app</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 </project>

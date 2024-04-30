@@ -32,6 +32,7 @@ public class MessageService {
     private final TopicRepository topicRepository;
     private final MessageMapper messageMapper;
     private final UserClient userClient;
+    private final ForumStreamService forumStreamService;
 
     @Transactional
     public void createMessage(MessageCreateDto messageCreateDto, UUID authorId) {
@@ -43,6 +44,14 @@ public class MessageService {
         Message message = messageMapper.map(messageCreateDto, authorId, topic);
 
         messageRepository.save(message);
+        sendNotificationToUsers(messageCreateDto.text(), topic.getId());
+    }
+
+    private void sendNotificationToUsers(
+            String message,
+            UUID topicId
+    ) {
+        forumStreamService.sendNotificationToUsers(message, topicId);
     }
 
     @Transactional
