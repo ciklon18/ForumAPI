@@ -8,6 +8,7 @@ import com.forum.api.dto.TopicUpdateDto;
 import com.forum.core.service.TopicService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +21,10 @@ public class TopicController {
 
     @PostMapping(ApiPaths.TOPIC)
     public UUID createTopic(
-            @Valid @RequestBody TopicCreateDto topic,
-            @RequestParam UUID authorId
+            @Valid @RequestBody TopicCreateDto topic
     ) {
-        return topicService.createTopic(topic, authorId);
+        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return topicService.createTopic(topic, userId);
     }
 
     @PatchMapping(ApiPaths.TOPIC_BY_ID)
@@ -52,5 +53,20 @@ public class TopicController {
     @GetMapping(ApiPaths.TOPIC_BY_QUERY)
     public List<TopicDto> getTopicsByQuery(@RequestParam(required = false) String text) {
         return topicService.getTopicsByQuery(text);
+    }
+
+    @PostMapping(ApiPaths.TOPIC_BY_ID_SUBSCRIBE)
+    public void subscribeToTopic(
+            @PathVariable("topicId") UUID topicId
+    ) {
+        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        topicService.subscribeToTopic(topicId, userId);
+    }
+    @PostMapping(ApiPaths.TOPIC_BY_ID_UNSUBSCRIBE)
+    public void unsubscribeFromTopic(
+            @PathVariable("topicId") UUID topicId
+    ) {
+        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        topicService.unsubscribeFromTopic(topicId, userId);
     }
 }

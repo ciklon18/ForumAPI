@@ -8,9 +8,11 @@ import com.forum.api.dto.TopicPaginationResponse;
 import com.forum.api.dto.TopicUpdateDto;
 import com.forum.core.entity.Category;
 import com.forum.core.entity.Topic;
+import com.forum.core.entity.TopicSubscription;
 import com.forum.core.mapper.TopicMapper;
 import com.forum.core.repository.CategoryRepository;
 import com.forum.core.repository.TopicRepository;
+import com.forum.core.repository.TopicSubscriptionRepository;
 import com.forum.integration.user.UserClient;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class TopicService {
     public static final Integer DEFAULT_PAGE_NUMBER = 1;
 
     private final TopicRepository topicRepository;
+    private final TopicSubscriptionRepository topicSubscriptionRepository;
     private final CategoryRepository categoryRepository;
     private final TopicMapper topicMapper;
     private final UserClient userClient;
@@ -75,10 +78,31 @@ public class TopicService {
         return topicRepository.getTopicsByQuery(query).stream().map(topicMapper::map).toList();
     }
 
+    @Transactional
+    public void subscribeToTopic(UUID topicId, UUID userId) {
+        checkIsTopicExist(topicId);
+        TopicSubscription topicSubscription = new TopicSubscription(topicId, userId);
+        topicSubscriptionRepository.save(topicSubscription);
+    }
+
+    @Transactional
+    public void unsubscribeFromTopic(UUID topicId, UUID userId) {
+        checkIsTopicExist(topicId);
+        topicSubscriptionRepository.deleteByTopicIdAndUserId(topicId, userId);
+    }
 
     private void isTopicNameOriginal(String name) {
         topicRepository.findByName(name).ifPresent(topic -> {
             throw new CustomException(ExceptionType.ALREADY_EXISTS, "Topic with this name already exists");
         });
+    }
+
+    private void checkIsTopicExist(UUID topicId) {
+        if (!topicRepository.existsById(topicId)) {
+            throw new CustomException(ExceptionType.BAD_REQUEST, String.format(
+                    "Topic with id=%s doesn't exist.",
+                    topicId
+            ));
+        }
     }
 }
