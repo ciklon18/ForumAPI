@@ -51,8 +51,8 @@ public class JwtUtils {
         return jwtService.generateRefreshToken(userId.toString(), login);
     }
 
-    public Claims extractAllClaims(String token) {
-        return jwtService.extractAllClaims(token);
+    public Claims extractAllClaimsFromAccessToken(String accessToken) {
+        return jwtService.extractAllClaimsFromAccessToken(accessToken);
     }
 
     public List<String> extractRoles(String token) {

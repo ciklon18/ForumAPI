@@ -36,7 +36,7 @@ public class JwtService {
                 .claim(LOGIN, login)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProps.getAccessExpirationTime()))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(getAccessSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -46,14 +46,14 @@ public class JwtService {
                 .claim(LOGIN, login)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProps.getRefreshExpirationTime()))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(getRefreshSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public Claims extractAllClaims(String token) {
+    public Claims extractAllClaimsFromAccessToken(String token) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+                    .setSigningKey(getAccessSigningKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
@@ -64,7 +64,7 @@ public class JwtService {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+        final Claims claims = extractAllClaimsFromAccessToken(token);
         return claimsResolver.apply(claims);
     }
 
@@ -77,9 +77,14 @@ public class JwtService {
         }
     }
 
-    private Key getSigningKey() {
+    private Key getAccessSigningKey() {
         return Keys.hmacShaKeyFor(jwtProps.getAccessSecret().getBytes(StandardCharsets.UTF_8));
     }
+
+    private Key getRefreshSigningKey() {
+        return Keys.hmacShaKeyFor(jwtProps.getRefreshSecret().getBytes(StandardCharsets.UTF_8));
+    }
+
 
     public String getSubject(String token) {
         return extractClaim(token, Claims::getSubject);

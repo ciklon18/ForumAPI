@@ -64,7 +64,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private JwtAuthentication getAuthentication(String token) {
-        Claims claims = jwtUtils.extractAllClaims(token);
+        Claims claims = jwtUtils.extractAllClaimsFromAccessToken(token);
         if (claims == null) {
             return new JwtAuthentication(false);
         }
