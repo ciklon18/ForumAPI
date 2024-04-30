@@ -21,10 +21,10 @@ public class TopicController {
 
     @PostMapping(ApiPaths.TOPIC)
     public UUID createTopic(
-            @Valid @RequestBody TopicCreateDto topic,
-            @RequestParam UUID authorId
+            @Valid @RequestBody TopicCreateDto topic
     ) {
-        return topicService.createTopic(topic, authorId);
+        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return topicService.createTopic(topic, userId);
     }
 
     @PatchMapping(ApiPaths.TOPIC_BY_ID)

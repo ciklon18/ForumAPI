@@ -7,6 +7,7 @@ import com.forum.api.dto.CategoryUpdateDto;
 import com.forum.core.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +22,10 @@ public class CategoryController {
 
     @PostMapping(ApiPaths.CATEGORY)
     public UUID createCategory(
-            @Valid @RequestBody CategoryCreateDto category,
-            @RequestParam UUID authorId
+            @Valid @RequestBody CategoryCreateDto category
     ) {
-        return categoryService.createCategory(category, authorId);
+        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return categoryService.createCategory(category, userId);
     }
 
     @PatchMapping(ApiPaths.CATEGORY_BY_ID)

@@ -9,6 +9,7 @@ import com.forum.core.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -22,10 +23,10 @@ public class MessageController {
 
     @PostMapping(ApiPaths.MESSAGE)
     public void createMessage(
-            @Valid @RequestBody MessageCreateDto message,
-            @RequestParam UUID authorId
+            @Valid @RequestBody MessageCreateDto message
     ) {
-        messageService.createMessage(message, authorId);
+        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        messageService.createMessage(message, userId);
     }
 
     @PatchMapping(ApiPaths.MESSAGE_BY_ID)
