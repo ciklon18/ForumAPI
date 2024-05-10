@@ -12,8 +12,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableSpringSecurity
 @EnableFeignClients
 @EnableApiExceptionHandler
-public class NotificationApp {
+public class NotificationApplication {
     public static void main(String[] args) {
-        SpringApplication.run(NotificationApp.class, args);
+        SpringApplication.run(NotificationApplication.class, args);
     }
 }
