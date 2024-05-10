@@ -1,9 +1,6 @@
 package com.forum.core.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +8,7 @@ import java.util.UUID;
 
 @Getter
 @Entity
+@Table(name = "topic_subscription")
 @NoArgsConstructor
 public class TopicSubscription {
     @Id
