@@ -45,7 +45,7 @@ public class JwtUtils {
 
     public String getOrGenerateRefreshToken(String login, UUID userId) {
         String token = tokenRepository.getToken(userId.toString());
-        if (token != null && validateToken(token)) {
+        if (token != null) {
             return token;
         }
         return jwtService.generateRefreshToken(userId.toString(), login);
