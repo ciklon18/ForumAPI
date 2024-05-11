@@ -2,11 +2,6 @@ server:
   port: ${NOTIFICATION_PORT:9447}
 
 spring:
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: rabbitmq
-    password: rabbitmq123
   datasource:
     url: ${NOTIFICATION_DATABASE_URL:jdbc:postgresql://localhost:5432/notification_db}
     username: ${DATABASE_USERNAME:postgres}
@@ -22,20 +17,16 @@ spring:
     hibernate:
       ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}
     show-sql: true
+  kafka:
+    bootstrap-servers: ${BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: 1
 
-rabbitmq:
-  queue:
-    topic:
-      topic_queue
-  exchange:
-    name: exchange
-  routing_key:
-    routing_key
-  user:
+
+topic:
+  forum:
     name:
-      rabbitmq
-    password:
-      rabbitmq123
+      ${FORUM_TOPIC_NAME:forum_topic}
 
 logging:
   level:
