@@ -81,8 +81,15 @@ public class TopicService {
     @Transactional
     public void subscribeToTopic(UUID topicId, UUID userId) {
         checkIsTopicExist(topicId);
+        checkIsAlreadySubscribed(topicId, userId);
         TopicSubscription topicSubscription = new TopicSubscription(topicId, userId);
         topicSubscriptionRepository.save(topicSubscription);
+    }
+
+    private void checkIsAlreadySubscribed(UUID topicId, UUID userId) {
+        if (topicSubscriptionRepository.existsTopicSubscriptionByTopicIdAndUserId(topicId, userId)) {
+            throw new CustomException(ExceptionType.BAD_REQUEST, "You have already subscribed");
+        }
     }
 
     @Transactional
@@ -93,7 +100,10 @@ public class TopicService {
 
     private void isTopicNameOriginal(String name) {
         topicRepository.findByName(name).ifPresent(topic -> {
-            throw new CustomException(ExceptionType.ALREADY_EXISTS, "Topic with this name already exists");
+            throw new CustomException(
+                    ExceptionType.ALREADY_EXISTS,
+                    "Topic with this name already exists"
+            );
         });
     }
 
