@@ -23,3 +23,7 @@ logging:
     org:
       springframework:
         security: ${LOGGING_LEVEL_SPRING_SECURITY:TRACE}
+
+topic:
+  name:
+    ${FORUM_TOPIC_NAME:forum_topic-0}
