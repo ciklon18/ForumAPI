@@ -3,6 +3,7 @@ package com.forum.config;
 import com.forum.core.mapper.CategoryMapper;
 import com.forum.core.mapper.MessageMapper;
 import com.forum.core.mapper.TopicMapper;
+import com.forum.core.mapper.TopicSubscriptionMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,5 +22,10 @@ public class MapperConfig {
     @Bean
     public TopicMapper topicMapper() {
         return TopicMapper.INSTANCE;
+    }
+
+    @Bean
+    public TopicSubscriptionMapper topicSubscriptionMapper() {
+        return TopicSubscriptionMapper.INSTANCE;
     }
 }

@@ -54,19 +54,4 @@ public class TopicController {
     public List<TopicDto> getTopicsByQuery(@RequestParam(required = false) String text) {
         return topicService.getTopicsByQuery(text);
     }
-
-    @PostMapping(ApiPaths.TOPIC_BY_ID_SUBSCRIBE)
-    public void subscribeToTopic(
-            @PathVariable("topicId") UUID topicId
-    ) {
-        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        topicService.subscribeToTopic(topicId, userId);
-    }
-    @PostMapping(ApiPaths.TOPIC_BY_ID_UNSUBSCRIBE)
-    public void unsubscribeFromTopic(
-            @PathVariable("topicId") UUID topicId
-    ) {
-        UUID userId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        topicService.unsubscribeFromTopic(topicId, userId);
-    }
 }
