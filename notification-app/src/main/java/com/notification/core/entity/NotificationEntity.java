@@ -22,6 +22,7 @@ public class NotificationEntity {
     private String text;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private NotificationStatus notificationStatus;
 
     @Column(nullable = false)
