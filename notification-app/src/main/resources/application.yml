@@ -21,7 +21,20 @@ spring:
     bootstrap-servers: ${BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: 1
-
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        debug: ${MAIL_DEBUG}
+        transport:
+          protocol: smtp
+        smtp:
+          auth: ${MAIL_AUTH}
+          starttls:
+            enable: ${MAIL_STARTTLS}
 
 topic:
   forum:
