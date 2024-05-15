@@ -49,7 +49,8 @@ public class MessageService {
 
         messageRepository.save(message);
 
-        sendNotificationToUsers(topic.getId(), authorId);
+        sendNotificationToUsers(topic.getId(), topic.getName(), authorId);
+        sendMessageToUsers(topic.getId(), topic.getName(), authorId);
     }
 
     @Transactional
@@ -116,6 +117,25 @@ public class MessageService {
         topicRepository.findById(topicId)
                 .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "Topic not found"));
     }
+
+    private void sendNotificationToUsers(UUID topicId, String topicName, UUID authorId) {
+        List<UUID> subscribedUserIds = topicSubscriptionService.getSubscribedUserIds(topicId, authorId);
+        notificationService.sendNotifications(
+                "New message in topic" + topicName,
+                "User with id=" + authorId + " wrote new message.",
+                subscribedUserIds
+        );
+    }
+
+    private void sendMessageToUsers(UUID topicId, String topicName, UUID authorId) {
+        List<String> subscribedUserEmails = getUserEmails(topicId, authorId);
+        notificationService.sendMessages(
+                "New message in topic" + topicName,
+                "User with id=" + authorId + " wrote new message.",
+                subscribedUserEmails
+        );
+    }
+
     private List<String> getUserEmails(UUID topicId, UUID authorId){
         List<UUID> subscribedUserIds = topicSubscriptionService.getSubscribedUserIds(topicId, authorId);
         if (subscribedUserIds.isEmpty()) return Collections.emptyList();
