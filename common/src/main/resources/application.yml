@@ -12,12 +12,14 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/messenger}
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:123}
+
   data:
     redis:
       host:
         ${REDIS_HOST:localhost}
       port:
         ${REDIS_PORT:6379}
+
   jpa:
     hibernate:
       ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}

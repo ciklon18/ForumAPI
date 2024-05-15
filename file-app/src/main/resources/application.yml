@@ -12,24 +12,27 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
   datasource:
     url: ${FILE_DATABASE_URL:jdbc:postgresql://localhost:5432/file_db}
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:123}
     driver-class-name: org.postgresql.Driver
+
   flyway:
     url: ${FILE_DATABASE_URL:jdbc:postgresql://localhost:5432/file_db}
     user: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:123}
     baseline-on-migrate: true
     locations: classpath:db/migration/file
+
   jpa:
     hibernate:
       ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}
     show-sql: true
+
   mvc:
     log-request-details: true
-
 
 logging:
   level:
