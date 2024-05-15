@@ -31,4 +31,9 @@ public class IntegrationController {
     public List<UUID> getModeratorCategoriesByUserId(@PathVariable("userId") UUID userId) {
         return integrationService.getModeratorCategoriesByUserId(userId);
     }
+
+    @GetMapping(IntegrationPaths.USER_EMAIL)
+    List<String> getUserEmails(@RequestParam("userIds") List<UUID> userIds) {
+        return integrationService.getUserEmails(userIds);
+    }
 }
