@@ -1,4 +1,4 @@
-package com.forum.integration.notification;
+package com.user.integration.notification;
 
 import com.common.kafka.annotation.EnableStreamNotificationService;
 import com.common.kafka.service.StreamNotificationService;
@@ -14,13 +14,7 @@ import java.util.UUID;
 public class NotificationService {
     private final StreamNotificationService streamNotificationService;
 
-    public void sendNotifications(String header, String text, List<UUID> userIds) {
-        if (userIds.isEmpty()) return;
+    public void sendNotification(String header, String text, List<UUID> userIds) {
         streamNotificationService.sendNotification(header, text, userIds);
-    }
-
-    public void sendMessages(String header, String text, List<String> userEmails) {
-        if (userEmails.isEmpty()) return;
-        streamNotificationService.sendMessage(header, text, userEmails);
     }
 }

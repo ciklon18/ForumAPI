@@ -19,7 +19,8 @@ spring:
     hibernate:
       ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}
     show-sql: true
-
+  kafka:
+    bootstrap-servers: ${BOOTSTRAP_SERVERS:localhost:9092}
 logging:
   level:
     org:
@@ -27,5 +28,11 @@ logging:
         security: ${LOGGING_LEVEL_SPRING_SECURITY:TRACE}
 
 topic:
-  name:
-    ${FORUM_TOPIC_NAME:forum_topic-0}
+  notification:
+    name:
+      ${NOTIFICATION_TOPIC_NAME:notification_topic}
+    group-id: 1
+  emailing:
+    name:
+      ${EMAILING_TOPIC_NAME:emailing_topic}
+    group-id: 1

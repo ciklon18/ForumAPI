@@ -2,15 +2,18 @@ package com.notification.core.service;
 
 import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
+import com.common.kafka.dto.NotificationDto;
 import com.notification.api.dto.NotificationPaginationResponse;
 import com.notification.api.dto.UserNotificationDto;
 import com.notification.api.enums.NotificationStatus;
+import com.notification.core.entity.NotificationEntity;
 import com.notification.core.mapper.NotificationMapper;
 import com.notification.core.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,5 +82,23 @@ public class NotificationService {
                 notificationIds,
                 NotificationStatus.READ.name()
         );
+    }
+
+    public void saveNotificationsToHistory(NotificationDto notificationDto) {
+        List<NotificationEntity> entityList = notificationDto.userIds()
+                .stream()
+                .map(userId -> {
+                    NotificationEntity entity = new NotificationEntity();
+                    entity.setHeader(notificationDto.header());
+                    entity.setText(notificationDto.text());
+                    entity.setNotificationStatus(NotificationStatus.NEW);
+                    entity.setUserId(userId);
+                    entity.setCreatedAt(LocalDateTime.now());
+                    entity.setUpdatedAt(LocalDateTime.now());
+                    return entity;
+                })
+                .toList();
+
+        notificationRepository.saveAll(entityList);
     }
 }

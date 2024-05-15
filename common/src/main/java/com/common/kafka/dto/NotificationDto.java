@@ -1,4 +1,4 @@
-package com.common.notification.dto;
+package com.common.kafka.dto;
 
 import lombok.Builder;
 

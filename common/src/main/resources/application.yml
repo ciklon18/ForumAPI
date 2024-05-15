@@ -23,6 +23,18 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:validate}
+  kafka:
+    bootstrap-servers: ${BOOTSTRAP_SERVERS:localhost:9092}
+
+topic:
+  notification:
+    name:
+      ${NOTIFICATION_TOPIC_NAME:notification_topic}
+    group-id: 1
+  emailing:
+    name:
+      ${EMAILING_TOPIC_NAME:emailing_topic}
+    group-id: 1
 
 logging:
   level:
