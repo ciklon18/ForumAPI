@@ -37,9 +37,14 @@ spring:
             enable: ${MAIL_STARTTLS}
 
 topic:
-  forum:
+  notification:
     name:
-      ${FORUM_TOPIC_NAME:forum_topic}
+      ${NOTIFICATION_TOPIC_NAME:notification_topic}
+    group-id: 1
+  emailing:
+    name:
+      ${EMAILING_TOPIC_NAME:emailing_topic}
+    group-id: 1
 
 logging:
   level:

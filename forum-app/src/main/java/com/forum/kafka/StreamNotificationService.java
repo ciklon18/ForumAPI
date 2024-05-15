@@ -14,7 +14,7 @@ public class StreamNotificationService {
     private final KafkaTemplate<String, NotificationDto> kafkaTemplate;
 
     public StreamNotificationService(
-            @Value("${topic.name}") String topicName,
+            @Value("${topic.notification.name}") String topicName,
             KafkaTemplate<String, NotificationDto> kafkaTemplate
     ) {
         this.topicName = topicName;
