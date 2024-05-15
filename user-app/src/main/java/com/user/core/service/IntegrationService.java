@@ -37,4 +37,9 @@ public class IntegrationService {
                 .stream()
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<String> getUserEmails(List<UUID> userIds) {
+        return userRepository.getUserEmails(userIds);
+    }
 }

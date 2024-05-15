@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -37,21 +38,6 @@ public class TopicSubscriptionService {
         topicSubscriptionRepository.deleteByTopicIdAndUserId(topicId, userId);
     }
 
-    private void checkIsAlreadySubscribed(UUID topicId, UUID userId) {
-        if (topicSubscriptionRepository.existsTopicSubscriptionByTopicIdAndUserId(topicId, userId)) {
-            throw new CustomException(ExceptionType.BAD_REQUEST, "You have already subscribed");
-        }
-    }
-
-    private void checkIsTopicExist(UUID topicId) {
-        if (!topicRepository.existsById(topicId)) {
-            throw new CustomException(ExceptionType.BAD_REQUEST, String.format(
-                    "Topic with id=%s doesn't exist.",
-                    topicId
-            ));
-        }
-    }
-
     public TopicSubscriptionPaginationDto getTopicSelections(
             UUID authorId, Integer pageNumber, Integer pageSize
     ) {
@@ -70,5 +56,28 @@ public class TopicSubscriptionService {
                 .pageNumber(pageNumber)
                 .totalPagesAmount(totalPagesAmount)
                 .build();
+    }
+
+    public List<UUID> getSubscribedUserIds(UUID topicId, UUID authorId) {
+        return topicSubscriptionRepository.findAllByTopicId(topicId)
+                .stream()
+                .map(TopicSubscription::getUserId)
+                .filter(uuid -> !Objects.equals(uuid, authorId))
+                .toList();
+    }
+
+    private void checkIsAlreadySubscribed(UUID topicId, UUID userId) {
+        if (topicSubscriptionRepository.existsTopicSubscriptionByTopicIdAndUserId(topicId, userId)) {
+            throw new CustomException(ExceptionType.BAD_REQUEST, "You have already subscribed");
+        }
+    }
+
+    private void checkIsTopicExist(UUID topicId) {
+        if (!topicRepository.existsById(topicId)) {
+            throw new CustomException(ExceptionType.BAD_REQUEST, String.format(
+                    "Topic with id=%s doesn't exist.",
+                    topicId
+            ));
+        }
     }
 }

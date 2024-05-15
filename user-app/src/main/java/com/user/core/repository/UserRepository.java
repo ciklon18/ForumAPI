@@ -28,4 +28,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                 AND (u.email = :email OR :email IS NULL)
             """)
     boolean isProfileExistByLoginAndEmail(String login, String email);
+
+    @Query("""
+            SElECT u.email
+            FROM User u
+            WHERE u.id IN (:userIds)
+            """)
+    List<String> getUserEmails(@Param("userIds") List<UUID> userIds);
 }
