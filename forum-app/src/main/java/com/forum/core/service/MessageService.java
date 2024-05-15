@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +36,7 @@ public class MessageService {
     private final UserClient userClient;
 
     private final NotificationService notificationService;
+    private final TopicSubscriptionService topicSubscriptionService;
 
     @Transactional
     public void createMessage(MessageCreateDto messageCreateDto, UUID authorId) {
@@ -49,11 +51,6 @@ public class MessageService {
 
         sendNotificationToUsers(topic.getId(), authorId);
     }
-
-    private void sendNotificationToUsers(UUID topicId, UUID authorId) {
-        notificationService.sendMessageNotificationToUsers(topicId, authorId);
-    }
-
 
     @Transactional
     public void updateMessage(UUID messageId, MessageUpdateDto messageUpdateDto) {
@@ -118,5 +115,10 @@ public class MessageService {
     private void isTopicExist(UUID topicId) {
         topicRepository.findById(topicId)
                 .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "Topic not found"));
+    }
+    private List<String> getUserEmails(UUID topicId, UUID authorId){
+        List<UUID> subscribedUserIds = topicSubscriptionService.getSubscribedUserIds(topicId, authorId);
+        if (subscribedUserIds.isEmpty()) return Collections.emptyList();
+        return userClient.getUserEmails(subscribedUserIds);
     }
 }
