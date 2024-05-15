@@ -1,6 +1,6 @@
 package com.notification.core.mapper;
 
-import com.common.notification.dto.NotificationDto;
+import com.common.kafka.dto.NotificationDto;
 import com.notification.api.dto.UserNotificationDto;
 import com.notification.core.entity.NotificationEntity;
 import org.mapstruct.Mapper;

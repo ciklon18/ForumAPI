@@ -1,7 +1,7 @@
 package com.notification.core.service;
 
-import com.common.notification.dto.MessageDto;
-import com.common.notification.dto.NotificationDto;
+import com.common.kafka.dto.MessageDto;
+import com.common.kafka.dto.NotificationDto;
 import com.notification.core.service.delivery.IDeliveryChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

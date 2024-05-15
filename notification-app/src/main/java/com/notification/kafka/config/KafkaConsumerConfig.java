@@ -1,6 +1,6 @@
 package com.notification.kafka.config;
 
-import com.common.notification.dto.NotificationDto;
+import com.common.kafka.dto.NotificationDto;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.common.notification.dto");
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.common.kafka.dto");
 
         return new DefaultKafkaConsumerFactory<>(props);
     }
@@ -44,6 +44,4 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
-
-
 }

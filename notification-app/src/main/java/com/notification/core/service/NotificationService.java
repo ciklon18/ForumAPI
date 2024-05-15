@@ -2,7 +2,7 @@ package com.notification.core.service;
 
 import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
-import com.common.notification.dto.NotificationDto;
+import com.common.kafka.dto.NotificationDto;
 import com.notification.api.dto.NotificationPaginationResponse;
 import com.notification.api.dto.UserNotificationDto;
 import com.notification.api.enums.NotificationStatus;

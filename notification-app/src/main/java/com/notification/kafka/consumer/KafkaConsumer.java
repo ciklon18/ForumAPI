@@ -1,7 +1,7 @@
 package com.notification.kafka.consumer;
 
-import com.common.notification.dto.MessageDto;
-import com.common.notification.dto.NotificationDto;
+import com.common.kafka.dto.MessageDto;
+import com.common.kafka.dto.NotificationDto;
 import com.notification.core.service.NotificationStreamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
