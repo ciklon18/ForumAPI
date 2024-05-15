@@ -7,8 +7,11 @@ import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
 import com.user.api.dto.*;
 import com.user.core.entity.User;
+import com.user.core.entity.UserConfirmation;
 import com.user.core.mapper.UserMapper;
+import com.user.core.repository.UserConfirmationRepository;
 import com.user.core.repository.UserRepository;
+import com.user.integration.notification.NotificationService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,40 +24,50 @@ import java.util.UUID;
 public class UserService extends BaseUserService {
 
     private final UserRepository userRepository;
+    private final UserConfirmationRepository userConfirmationRepository;
     private final AuthorityService authorityService;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final NotificationService notificationService;
 
     public UserService(
             UserRepository userRepository,
+            UserConfirmationRepository userConfirmationRepository,
             AuthorityService authorityService,
             UserMapper userMapper,
             BCryptPasswordEncoder passwordEncoder,
-            JwtUtils jwtUtils
+            JwtUtils jwtUtils,
+            NotificationService notificationService
     ) {
         super(userRepository, authorityService);
         this.userRepository = userRepository;
+        this.userConfirmationRepository = userConfirmationRepository;
         this.authorityService = authorityService;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
-
+        this.notificationService = notificationService;
     }
 
     @Transactional
-    public JwtAuthorityDto register(RegistrationRequestDto registrationRequestDto) {
+    public RegistrationDto register(RegistrationRequestDto registrationRequestDto) {
         isLoginAndEmailAlreadyUsed(registrationRequestDto.login(), registrationRequestDto.email());
         User user = userMapper.map(registrationRequestDto, passwordEncoder.encode(registrationRequestDto.password()));
         User savedUser = userRepository.save(user);
-        String accessToken = jwtUtils.generateAccessToken(user.getLogin(),
-                                                          savedUser.getId(),
-                                                          List.of(Role.BASE_ROLE.getAuthority())
-        );
-        String refreshToken = jwtUtils.getOrGenerateRefreshToken(user.getLogin(), savedUser.getId());
-        jwtUtils.saveToken(savedUser.getId().toString(), refreshToken);
         setNewUserAuthorities(savedUser.getId());
-        return new JwtAuthorityDto(savedUser.getId(), accessToken, refreshToken);
+        UserConfirmation userConfirmation = userConfirmationRepository.save(new UserConfirmation(user.getId()));
+        sendConfirmationMessage(savedUser.getEmail(), userConfirmation.getConfirmationCode());
+        return new RegistrationDto("User successfully registered");
+    }
+
+    private void sendConfirmationMessage(String userEmail, UUID confirmationCode) {
+        String confirmationContent = generateConfirmationContent(confirmationCode);
+        notificationService.sendMessage("Email confirmation", confirmationContent, List.of(userEmail));
+    }
+
+    private String generateConfirmationContent(UUID confirmationCode) {
+        return "http://localhost:9444/api/user/confirm/" + confirmationCode;
     }
 
     @Transactional
@@ -65,6 +78,8 @@ public class UserService extends BaseUserService {
             throw new CustomException(ExceptionType.UNAUTHORIZED, "User is deleted");
         } else if (user.getBlockedAt() != null) {
             throw new CustomException(ExceptionType.UNAUTHORIZED, "User is blocked");
+        } else  if (!user.isConfirmed()) {
+            throw new CustomException(ExceptionType.UNAUTHORIZED, "User's email wasn't confirmed");
         }
         List<String> roles = authorityService.getUserRoles(user.getId());
         String accessToken = jwtUtils.generateAccessToken(user.getLogin(), user.getId(), roles);
@@ -95,6 +110,22 @@ public class UserService extends BaseUserService {
         String newRefreshToken = jwtUtils.getOrGenerateRefreshToken(login, UUID.fromString(userId));
         jwtUtils.saveToken(userId, newRefreshToken);
         return new TokenDto(null, newRefreshToken);
+    }
+
+    @Transactional
+    public JwtAuthorityDto confirmAccount(UUID confirmationCode) {
+        UserConfirmation userConfirmation = userConfirmationRepository.findByConfirmationCode(confirmationCode);
+        UUID userId = userConfirmation.getUserId();
+        userRepository.confirmUser(userId);
+        String userLogin = userRepository.getUserLoginById(userId);
+        String accessToken = jwtUtils.generateAccessToken(
+                userLogin,
+                userId,
+                List.of(Role.BASE_ROLE.getAuthority())
+        );
+        String refreshToken = jwtUtils.getOrGenerateRefreshToken(userLogin, userId);
+        jwtUtils.saveToken(userId.toString(), refreshToken);
+        return new JwtAuthorityDto(userId, accessToken, refreshToken);
     }
 
     private void checkRefreshToken(String refreshToken) {

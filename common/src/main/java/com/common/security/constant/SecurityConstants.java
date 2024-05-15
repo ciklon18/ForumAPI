@@ -12,7 +12,8 @@ public class SecurityConstants {
             "/configuration/ui",
             "/configuration/security",
             "/swagger-ui.html",
-            "/webjars/**"
+            "/webjars/**",
+            "/favicon.ico"
     };
 
     public static final String ROLES = "roles";

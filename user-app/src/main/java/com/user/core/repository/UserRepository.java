@@ -2,6 +2,7 @@ package com.user.core.repository;
 
 import com.user.core.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,4 +36,19 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             WHERE u.id IN (:userIds)
             """)
     List<String> getUserEmails(@Param("userIds") List<UUID> userIds);
+
+    @Query("""
+        SELECT u.login
+        FROM User u
+        WHERE u.id = :userId
+    """)
+    String getUserLoginById(@Param("userId") UUID userId);
+
+    @Modifying
+    @Query("""
+        UPDATE User u
+        SET u.isConfirmed = true
+        WHERE u.id = :userId
+""")
+    void confirmUser(@Param("userId") UUID userId);
 }

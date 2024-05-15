@@ -77,8 +77,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private boolean isAuthenticationRequest(HttpServletRequest request) {
-        return request.getRequestURI().contains(ApiPaths.LOGIN) ||
-                request.getRequestURI().contains(ApiPaths.REGISTER);
+        String uri = request.getRequestURI();
+        return uri.contains(ApiPaths.LOGIN)
+                || uri.contains(ApiPaths.REGISTER)
+                || uri.contains(ApiPaths.CONFIRMATION);
     }
 
     private void setAuthenticationForAuthenticationRequest() {

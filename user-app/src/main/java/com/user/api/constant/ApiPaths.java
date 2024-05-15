@@ -15,6 +15,8 @@ public class ApiPaths {
 
     public static final String ACCESS = "/api/user/access";
 
+    public static final String CONFIRMATION = "/api/user/confirm/{confirmation_code}";
+
     public static final String ASSIGN_ROLE = "/api/admin/authority/user/{id}/assign";
 
     public static final String REMOVE_ROLE = "/api/admin/authority/user/{id}/remove";

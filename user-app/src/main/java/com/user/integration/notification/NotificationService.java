@@ -17,4 +17,8 @@ public class NotificationService {
     public void sendNotification(String header, String text, List<UUID> userIds) {
         streamNotificationService.sendNotification(header, text, userIds);
     }
+
+    public void sendMessage(String header, String text, List<String> userEmails) {
+        streamNotificationService.sendMessage(header, text, userEmails);
+    }
 }

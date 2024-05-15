@@ -5,9 +5,9 @@ import com.user.api.dto.*;
 import com.user.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -17,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping(ApiPaths.REGISTER)
-    public JwtAuthorityDto register(@RequestBody RegistrationRequestDto registrationRequestDto) {
+    public RegistrationDto register(@RequestBody RegistrationRequestDto registrationRequestDto) {
         return userService.register(registrationRequestDto);
     }
 
@@ -39,5 +39,10 @@ public class UserController {
     @PostMapping(ApiPaths.ACCESS)
     public TokenDto getAccessToken(@RequestBody TokenDto tokenDto) {
         return userService.getAccessToken(tokenDto.refreshToken());
+    }
+
+    @GetMapping(ApiPaths.CONFIRMATION)
+    public JwtAuthorityDto confirmAccount(@PathVariable("confirmation_code") UUID confirmation_code) {
+        return userService.confirmAccount(confirmation_code);
     }
 }
