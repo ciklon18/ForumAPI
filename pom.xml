@@ -8,13 +8,13 @@
         <version>3.2.2</version>
         <relativePath/>
     </parent>
-    <groupId>com.example</groupId>
-    <artifactId>messenger</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
-    <name>messenger</name>
-    <description>messenger</description>
+    <groupId>com.ciklon</groupId>
+    <artifactId>forum</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>forum</name>
+    <description>forum</description>
 
     <modules>
         <module>user-app</module>
@@ -166,7 +166,6 @@
                 <artifactId>kafka-clients</artifactId>
                 <version>${kafka.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 </project>
