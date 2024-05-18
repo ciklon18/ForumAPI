@@ -9,8 +9,10 @@
         <version>1.0.0</version>
     </parent>
 
+    <groupId>com.file</groupId>
     <artifactId>file-app</artifactId>
     <packaging>jar</packaging>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -46,7 +48,7 @@
         <dependency>
             <groupId>com.forum</groupId>
             <artifactId>common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
