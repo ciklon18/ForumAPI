@@ -1,6 +1,10 @@
 server:
   port: ${GATEWAY_PORT:9443}
 
+springdoc:
+  swagger-ui:
+    configUrl: "/swagger-config.json"
+
 spring:
   application:
     name: gateway-app
@@ -11,6 +15,7 @@ spring:
           uri: http://localhost:9444
           predicates:
             - Path=/api/user/**
+            - Path=/api/admin/**
         - id: forum-app
           uri: http://localhost:9445
           predicates:
@@ -19,3 +24,7 @@ spring:
           uri: http://localhost:9446
           predicates:
             - Path=/api/file/**
+        - id: notification-app
+          uri: http://localhost:9447
+          predicates:
+            - Path=/api/notification/**

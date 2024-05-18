@@ -2,6 +2,7 @@ package com.forum.api.rest;
 
 import com.forum.api.constant.IntegrationPaths;
 import com.forum.core.service.IntegrationService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+@Hidden
 @Slf4j
 @RestController
 @RequiredArgsConstructor

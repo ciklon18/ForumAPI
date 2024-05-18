@@ -3,6 +3,7 @@ package com.user.api.rest;
 import com.user.api.constant.IntegrationPaths;
 import com.user.api.dto.UserDto;
 import com.user.core.service.IntegrationService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+@Hidden
 @RestController
 @RequiredArgsConstructor
 public class IntegrationController {

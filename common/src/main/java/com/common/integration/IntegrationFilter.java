@@ -26,7 +26,7 @@ public class IntegrationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) {
-        if (request.getRequestURI().contains("/api")){
+        if (request.getRequestURI().contains("/api") || request.getRequestURI().contains("/swagger-ui")) {
             filterChain.doFilter(request, response);
             return;
         }
