@@ -66,6 +66,15 @@ public class TopicSubscriptionService {
                 .toList();
     }
 
+    public List<String> getSubscribedUserStringIds(UUID topicId, UUID authorId) {
+        return topicSubscriptionRepository.findAllByTopicId(topicId)
+                .stream()
+                .map(TopicSubscription::getUserId)
+                .filter(uuid -> !Objects.equals(uuid, authorId))
+                .map(UUID::toString)
+                .toList();
+    }
+
     private void checkIsAlreadySubscribed(UUID topicId, UUID userId) {
         if (topicSubscriptionRepository.existsTopicSubscriptionByTopicIdAndUserId(topicId, userId)) {
             throw new CustomException(ExceptionType.BAD_REQUEST, "You have already subscribed");

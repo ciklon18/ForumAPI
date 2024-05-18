@@ -1,6 +1,5 @@
 package com.notification.kafka.consumer;
 
-import com.common.kafka.dto.MessageDto;
 import com.common.kafka.dto.NotificationDto;
 import com.notification.core.service.NotificationStreamService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +17,6 @@ public class KafkaConsumer {
     @KafkaListener(topics = "${topic.notification.name}", groupId = "${topic.notification.group-id}")
     public void listenNotificationTopic(NotificationDto notificationDto) {
         log.info("Received from history topic: {}", notificationDto.toString());
-        notificationStreamService.saveNotificationsToHistory(notificationDto);
-    }
-
-    @KafkaListener(topics = "${topic.emailing.name}", groupId = "${topic.emailing.group-id}")
-    public void listenEmailingTopic(MessageDto messageDto) {
-        log.info("Received from email topic: {}", "");
-        notificationStreamService.sendMessageToEmail(messageDto);
+        notificationStreamService.handleNotification(notificationDto);
     }
 }

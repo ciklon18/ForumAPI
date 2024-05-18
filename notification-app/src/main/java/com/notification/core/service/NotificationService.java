@@ -85,14 +85,14 @@ public class NotificationService {
     }
 
     public void saveNotificationsToHistory(NotificationDto notificationDto) {
-        List<NotificationEntity> entityList = notificationDto.userIds()
+        List<NotificationEntity> entityList = notificationDto.userData()
                 .stream()
                 .map(userId -> {
                     NotificationEntity entity = new NotificationEntity();
                     entity.setHeader(notificationDto.header());
                     entity.setText(notificationDto.text());
                     entity.setNotificationStatus(NotificationStatus.NEW);
-                    entity.setUserId(userId);
+                    entity.setUserId(UUID.fromString(userId));
                     entity.setCreatedAt(LocalDateTime.now());
                     entity.setUpdatedAt(LocalDateTime.now());
                     return entity;

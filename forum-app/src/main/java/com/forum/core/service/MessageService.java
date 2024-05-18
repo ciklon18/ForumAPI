@@ -2,6 +2,7 @@ package com.forum.core.service;
 
 import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
+import com.common.kafka.enums.NotificationType;
 import com.forum.api.dto.MessageCreateDto;
 import com.forum.api.dto.MessageDto;
 import com.forum.api.dto.MessagePaginationResponse;
@@ -48,9 +49,7 @@ public class MessageService {
         Message message = messageMapper.map(messageCreateDto, authorId, topic);
 
         messageRepository.save(message);
-
-        sendNotificationToUsers(topic.getId(), topic.getName(), authorId);
-        sendMessageToUsers(topic.getId(), topic.getName(), authorId);
+        sendNotificationToUsers(topic.getId(), topic.getName(), authorId, NotificationType.ALL);
     }
 
     @Transactional
@@ -118,21 +117,13 @@ public class MessageService {
                 .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "Topic not found"));
     }
 
-    private void sendNotificationToUsers(UUID topicId, String topicName, UUID authorId) {
-        List<UUID> subscribedUserIds = topicSubscriptionService.getSubscribedUserIds(topicId, authorId);
+    private void sendNotificationToUsers(UUID topicId, String topicName, UUID authorId, NotificationType type) {
+        List<String> subscribedUserIds = topicSubscriptionService.getSubscribedUserStringIds(topicId, authorId);
         notificationService.sendNotifications(
                 "New message in topic" + topicName,
                 "User with id=" + authorId + " wrote new message.",
+                type,
                 subscribedUserIds
-        );
-    }
-
-    private void sendMessageToUsers(UUID topicId, String topicName, UUID authorId) {
-        List<String> subscribedUserEmails = getUserEmails(topicId, authorId);
-        notificationService.sendMessages(
-                "New message in topic" + topicName,
-                "User with id=" + authorId + " wrote new message.",
-                subscribedUserEmails
         );
     }
 

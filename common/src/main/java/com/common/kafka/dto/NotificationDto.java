@@ -1,15 +1,16 @@
 package com.common.kafka.dto;
 
+import com.common.kafka.enums.NotificationType;
 import lombok.Builder;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
 @Builder
 public record NotificationDto(
         String header,
         String text,
-        List<UUID> userIds
+        List<String> userData,
+        NotificationType notificationType
 ) implements Serializable {
 }

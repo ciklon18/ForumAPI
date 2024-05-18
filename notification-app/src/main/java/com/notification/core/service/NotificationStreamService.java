@@ -1,6 +1,5 @@
 package com.notification.core.service;
 
-import com.common.kafka.dto.MessageDto;
 import com.common.kafka.dto.NotificationDto;
 import com.notification.core.service.delivery.IDeliveryChannelService;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +11,14 @@ public class NotificationStreamService {
     private final NotificationService notificationService;
     private final IDeliveryChannelService deliveryChannelService;
 
-    public void saveNotificationsToHistory(NotificationDto notificationDto) {
-        notificationService.saveNotificationsToHistory(notificationDto);
-    }
-
-    public void sendMessageToEmail(MessageDto messageDto) {
-        deliveryChannelService.sendMessage(messageDto);
+    public void handleNotification(NotificationDto notificationDto) {
+        switch (notificationDto.notificationType()){
+            case MAILING -> deliveryChannelService.sendMessage(notificationDto);
+            case HISTORY -> notificationService.saveNotificationsToHistory(notificationDto);
+            case ALL -> {
+                notificationService.saveNotificationsToHistory(notificationDto);
+                deliveryChannelService.sendMessage(notificationDto);
+            }
+        }
     }
 }

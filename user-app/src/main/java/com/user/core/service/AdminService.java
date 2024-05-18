@@ -2,6 +2,7 @@ package com.user.core.service;
 
 import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
+import com.common.kafka.enums.NotificationType;
 import com.user.api.dto.RegistrationRequestDto;
 import com.user.api.dto.UpdateUserDto;
 import com.user.api.dto.UserDto;
@@ -75,14 +76,15 @@ public class AdminService extends BaseUserService {
                 .orElseThrow(() -> new CustomException(ExceptionType.NOT_FOUND, "User is not found"));
         user.setBlockedAt(LocalDateTime.now());
         userRepository.save(user);
-        sendNotificationToBlockedUser(user.getId());
+        sendNotificationToBlockedUser(user.getId().toString());
     }
 
-    private void sendNotificationToBlockedUser(UUID userId) {
+    private void sendNotificationToBlockedUser(String userId) {
         notificationService.sendNotification(
                 DefaultMessages.USER_BLOCK_HEADER,
                 DefaultMessages.USER_BLOCK_TEXT,
-                List.of(userId)
+                List.of(userId),
+                NotificationType.ALL
         );
     }
 }

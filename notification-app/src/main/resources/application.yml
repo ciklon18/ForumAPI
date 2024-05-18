@@ -45,10 +45,6 @@ topic:
     name:
       ${NOTIFICATION_TOPIC_NAME:notification_topic}
     group-id: 1
-  emailing:
-    name:
-      ${EMAILING_TOPIC_NAME:emailing_topic}
-    group-id: 1
 
 logging:
   level:

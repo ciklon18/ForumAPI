@@ -1,6 +1,5 @@
 package com.common.kafka.config;
 
-import com.common.kafka.dto.MessageDto;
 import com.common.kafka.dto.NotificationDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -30,16 +29,6 @@ public class KafkaConfig {
 
     @Bean
     ProducerFactory<String, NotificationDto> notificationProducerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerFactoryConfigProps());
-    }
-
-    @Bean
-    public KafkaTemplate<String, MessageDto> messageKafkaTemplate() {
-        return new KafkaTemplate<>(messageProducerFactory());
-    }
-
-    @Bean
-    ProducerFactory<String, MessageDto> messageProducerFactory() {
         return new DefaultKafkaProducerFactory<>(producerFactoryConfigProps());
     }
 

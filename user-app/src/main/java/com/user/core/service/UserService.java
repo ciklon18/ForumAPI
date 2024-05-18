@@ -5,6 +5,7 @@ import com.common.auth.jwt.Role;
 import com.common.auth.util.JwtUtils;
 import com.common.exception.CustomException;
 import com.common.exception.ExceptionType;
+import com.common.kafka.enums.NotificationType;
 import com.user.api.dto.*;
 import com.user.core.entity.User;
 import com.user.core.entity.UserConfirmation;
@@ -57,13 +58,18 @@ public class UserService extends BaseUserService {
         User savedUser = userRepository.save(user);
         setNewUserAuthorities(savedUser.getId());
         UserConfirmation userConfirmation = userConfirmationRepository.save(new UserConfirmation(user.getId()));
-        sendConfirmationMessage(savedUser.getEmail(), userConfirmation.getConfirmationCode());
+        sendConfirmationNotification(savedUser.getEmail(), userConfirmation.getConfirmationCode());
         return new RegistrationDto("User successfully registered");
     }
 
-    private void sendConfirmationMessage(String userEmail, UUID confirmationCode) {
+    private void sendConfirmationNotification(String userEmail, UUID confirmationCode) {
         String confirmationContent = generateConfirmationContent(confirmationCode);
-        notificationService.sendMessage("Email confirmation", confirmationContent, List.of(userEmail));
+        notificationService.sendNotification(
+                "Email confirmation",
+                confirmationContent,
+                List.of(userEmail),
+                NotificationType.MAILING
+        );
     }
 
     private String generateConfirmationContent(UUID confirmationCode) {

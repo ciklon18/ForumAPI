@@ -1,7 +1,8 @@
 package com.notification.core.service.delivery;
 
-import com.common.kafka.dto.MessageDto;
+
+import com.common.kafka.dto.NotificationDto;
 
 public interface IDeliveryChannelService {
-    void sendMessage(MessageDto messageDto);
+    void sendMessage(NotificationDto notificationDto);
 }
