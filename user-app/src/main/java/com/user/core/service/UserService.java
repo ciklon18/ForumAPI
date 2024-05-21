@@ -120,7 +120,8 @@ public class UserService extends BaseUserService {
 
     @Transactional
     public JwtAuthorityDto confirmAccount(UUID confirmationCode) {
-        UserConfirmation userConfirmation = userConfirmationRepository.findByConfirmationCode(confirmationCode);
+        UserConfirmation userConfirmation = userConfirmationRepository.findByConfirmationCode(confirmationCode)
+                .orElseThrow(() -> new CustomException(ExceptionType.BAD_REQUEST, "Wrong confirmation code"));
         UUID userId = userConfirmation.getUserId();
         userRepository.confirmUser(userId);
         String userLogin = userRepository.getUserLoginById(userId);

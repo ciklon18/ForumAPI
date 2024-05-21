@@ -22,5 +22,5 @@ public class ApiPaths {
 
     public static final String REMOVE_ROLE = "/api/admin/authority/user/{id}/remove";
 
-    public static final String CONFIRMATION = "/api/user/confirm";
+    public static final String CONFIRMATION = "/api/user/confirm/{confirmation_code}";
 }

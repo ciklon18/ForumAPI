@@ -80,7 +80,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         return uri.contains(ApiPaths.LOGIN)
                 || uri.contains(ApiPaths.REGISTER)
-                || uri.contains(ApiPaths.CONFIRMATION);
+                || uri.contains("/api/user/confirm");
     }
 
     private void setAuthenticationForAuthenticationRequest() {

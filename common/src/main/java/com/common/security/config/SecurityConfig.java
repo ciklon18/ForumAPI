@@ -57,7 +57,7 @@ public class SecurityConfig {
                                         request.requestMatchers(AUTH_WHITELIST).permitAll()
                                                 .requestMatchers(HttpMethod.POST, ApiPaths.REGISTER).permitAll()
                                                 .requestMatchers(HttpMethod.POST, ApiPaths.LOGIN).permitAll()
-                                                .requestMatchers(HttpMethod.POST, ApiPaths.CONFIRMATION).permitAll()
+                                                .requestMatchers(HttpMethod.GET, ApiPaths.CONFIRMATION).permitAll()
                                                 .requestMatchers(ApiPaths.ASSIGN_ROLE).hasAuthority(ADMIN)
                                                 .requestMatchers(ApiPaths.REMOVE_ROLE).hasAuthority(ADMIN)
                                                 .requestMatchers(ApiPaths.CREATE_USER).hasAuthority(ADMIN)
